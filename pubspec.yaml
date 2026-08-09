@@ -1,41 +1,64 @@
-name: task_flow
-description: "A professional task management application built with Flutter and REST API."
-publish_to: 'none'
 
-version: 1.0.0+1
+  name: task_flow
+  description: "A professional task management application built with Flutter and REST API."
+  publish_to: "none"
 
-environment:
-  sdk: ">=3.8.0 <4.0.0"
+  version: 1.0.0+1
 
-dependencies:
+  environment:
+    sdk: ">=3.8.0 <4.0.0"
+
+  dependencies:
+    flutter:
+      sdk: flutter
+
+    # Icons
+    cupertino_icons: ^1.0.8
+    iconsax: ^0.0.8
+
+    # State Management & Navigation
+    get: ^4.7.2
+
+    # REST API
+    dio: ^5.8.0+1
+
+    # Local Storage
+    get_storage: ^2.1.1
+
+    # Secure Storage
+    flutter_secure_storage: ^9.2.4
+
+    # Environment Variables
+    flutter_dotenv: ^5.2.1
+
+    # Network Connectivity
+    connectivity_plus: ^6.1.4
+
+    # JSON
+    json_annotation: ^4.9.0
+
+    # Date & Time
+    intl: ^0.20.2
+
+    # Cached Images
+    cached_network_image: ^3.4.1
+
+  dev_dependencies:
+    flutter_test:
+      sdk: flutter
+
+    # Linting
+    flutter_lints: ^5.0.0
+
+    # Code Generation
+    build_runner: ^2.4.15
+    json_serializable: ^6.9.5
+
   flutter:
-    sdk: flutter
+    uses-material-design: true
 
-  cupertino_icons: ^1.0.8
-  get: ^4.7.2
-  dio: ^5.8.0+1
-  get_storage: ^2.1.1
-  flutter_secure_storage: ^9.2.4
-  flutter_dotenv: ^5.2.1
-  connectivity_plus: ^6.1.4
-  json_annotation: ^4.9.0
-  intl: ^0.20.2
-  cached_network_image: ^3.4.1
-  iconsax: ^0.0.8
-
-dev_dependencies:
-  flutter_test:
-    sdk: flutter
-
-  flutter_lints: ^5.0.0
-  build_runner: ^2.4.15
-  json_serializable: ^6.9.5
-
-flutter:
-  uses-material-design: true
-
-  assets:
-    - assets/images/
-    - assets/icons/
-    - assets/fonts/
-    - .env
+    assets:
+      - assets/images/
+      - assets/icons/
+      - assets/fonts/
+      - .env
