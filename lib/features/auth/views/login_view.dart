@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-
+import '../../../app/routes/app_routes.dart';
 import '../../../app/theme/app_colors.dart';
 import '../controllers/login_controller.dart';
 
@@ -16,22 +16,24 @@ class LoginView extends GetView<LoginController> {
       backgroundColor: AppColors.background,
       body: Stack(
         children: [
-          // ================= TOP GRADIENT =================
+          // TOP GRADIENT BACKGROUND
+
           Container(
-            height: size.height * 0.46,
+            height: size.height * 0.47,
             width: double.infinity,
             decoration: const BoxDecoration(
               gradient: AppColors.primaryGradient,
             ),
           ),
 
-          // Decorative Circle
+          // DECORATIVE CIRCLE 1
+
           Positioned(
-            top: -70,
-            right: -55,
+            top: -80,
+            right: -60,
             child: Container(
-              height: 180,
-              width: 180,
+              height: 190,
+              width: 190,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
                 color: Colors.white.withValues(alpha: 0.08),
@@ -39,12 +41,14 @@ class LoginView extends GetView<LoginController> {
             ),
           ),
 
+          // DECORATIVE CIRCLE 2
+
           Positioned(
-            top: 140,
-            left: -80,
+            top: 130,
+            left: -85,
             child: Container(
-              height: 150,
-              width: 150,
+              height: 160,
+              width: 160,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
                 color: Colors.white.withValues(alpha: 0.06),
@@ -52,20 +56,27 @@ class LoginView extends GetView<LoginController> {
             ),
           ),
 
-          // ================= CONTENT =================
+          // MAIN CONTENT
+
           SafeArea(
             child: SingleChildScrollView(
               physics: const BouncingScrollPhysics(),
-              padding: const EdgeInsets.fromLTRB(20, 35, 20, 30),
+              padding: const EdgeInsets.fromLTRB(
+                20,
+                35,
+                20,
+                30,
+              ),
               child: Column(
                 children: [
-                  // ================= LOGO =================
+                  // APP LOGO
+
                   Container(
-                    height: 72,
-                    width: 72,
+                    height: 74,
+                    width: 74,
                     decoration: BoxDecoration(
                       color: Colors.white.withValues(alpha: 0.18),
-                      borderRadius: BorderRadius.circular(22),
+                      borderRadius: BorderRadius.circular(23),
                       border: Border.all(
                         color: Colors.white.withValues(alpha: 0.25),
                       ),
@@ -73,11 +84,13 @@ class LoginView extends GetView<LoginController> {
                     child: const Icon(
                       Icons.check_rounded,
                       color: Colors.white,
-                      size: 42,
+                      size: 44,
                     ),
                   ),
 
                   const SizedBox(height: 18),
+
+                  // APP NAME
 
                   const Text(
                     'TaskFlow',
@@ -90,7 +103,7 @@ class LoginView extends GetView<LoginController> {
                   ),
 
                   const SizedBox(height: 8),
-
+                  // APP DESCRIPTION
                   Text(
                     'Organize your tasks.\nAchieve more every day.',
                     textAlign: TextAlign.center,
@@ -102,8 +115,7 @@ class LoginView extends GetView<LoginController> {
                   ),
 
                   const SizedBox(height: 42),
-
-                  // ================= LOGIN CARD =================
+                  // LOGIN CARD
                   Container(
                     width: double.infinity,
                     padding: const EdgeInsets.fromLTRB(
@@ -126,8 +138,10 @@ class LoginView extends GetView<LoginController> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
+                        // TITLE
+
                         Text(
-                          'Welcome Back 👋',
+                          'Welcome Back',
                           style: theme.textTheme.headlineMedium,
                         ),
 
@@ -140,7 +154,8 @@ class LoginView extends GetView<LoginController> {
 
                         const SizedBox(height: 28),
 
-                        // ================= EMAIL =================
+                        // EMAIL LABEL
+
                         Text(
                           'Email Address',
                           style: theme.textTheme.titleMedium?.copyWith(
@@ -149,11 +164,13 @@ class LoginView extends GetView<LoginController> {
                         ),
 
                         const SizedBox(height: 9),
+                        // EMAIL FIELD
 
                         TextField(
                           controller: controller.emailController,
                           keyboardType: TextInputType.emailAddress,
                           textInputAction: TextInputAction.next,
+                          autocorrect: false,
                           decoration: const InputDecoration(
                             hintText: 'you@example.com',
                             prefixIcon: Icon(
@@ -164,8 +181,7 @@ class LoginView extends GetView<LoginController> {
                         ),
 
                         const SizedBox(height: 20),
-
-                        // ================= PASSWORD =================
+                        // PASSWORD LABEL
                         Text(
                           'Password',
                           style: theme.textTheme.titleMedium?.copyWith(
@@ -174,6 +190,7 @@ class LoginView extends GetView<LoginController> {
                         ),
 
                         const SizedBox(height: 9),
+                        // PASSWORD FIELD
 
                         Obx(
                               () => TextField(
@@ -181,7 +198,11 @@ class LoginView extends GetView<LoginController> {
                             obscureText:
                             controller.isPasswordHidden.value,
                             textInputAction: TextInputAction.done,
-                            onSubmitted: (_) => controller.login(),
+                            onSubmitted: (_) {
+                              if (!controller.isLoading.value) {
+                                controller.login();
+                              }
+                            },
                             decoration: InputDecoration(
                               hintText: 'Enter your password',
                               prefixIcon: const Icon(
@@ -195,19 +216,26 @@ class LoginView extends GetView<LoginController> {
                                   controller.isPasswordHidden.value
                                       ? Icons.visibility_off_outlined
                                       : Icons.visibility_outlined,
+                                  color: AppColors.textSecondary,
                                 ),
                               ),
                             ),
                           ),
                         ),
 
-                        const SizedBox(height: 12),
-
-                        // ================= FORGOT PASSWORD =================
+                        const SizedBox(height: 10),
+                        // FORGOT PASSWORD
                         Align(
                           alignment: Alignment.centerRight,
                           child: TextButton(
-                            onPressed: () {},
+                            onPressed: () {
+                              Get.toNamed(AppRoutes.forgotPassword);
+                            },
+                            style: TextButton.styleFrom(
+                              padding: EdgeInsets.zero,
+                              minimumSize: Size.zero,
+                              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                            ),
                             child: const Text(
                               'Forgot Password?',
                               style: TextStyle(
@@ -218,62 +246,87 @@ class LoginView extends GetView<LoginController> {
                           ),
                         ),
 
-                        const SizedBox(height: 18),
-
-                        // ================= LOGIN BUTTON =================
-                        SizedBox(
-                          width: double.infinity,
-                          height: 56,
-                          child: DecoratedBox(
-                            decoration: BoxDecoration(
-                              gradient: AppColors.primaryGradient,
-                              borderRadius: BorderRadius.circular(17),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: AppColors.primary.withValues(
-                                    alpha: 0.28,
-                                  ),
-                                  blurRadius: 18,
-                                  offset: const Offset(0, 8),
-                                ),
-                              ],
-                            ),
-                            child: ElevatedButton(
-                              onPressed: controller.login,
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: Colors.transparent,
-                                foregroundColor: Colors.white,
-                                shadowColor: Colors.transparent,
-                                elevation: 0,
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(17),
-                                ),
-                              ),
-                              child: const Row(
-                                mainAxisAlignment:
-                                MainAxisAlignment.center,
-                                children: [
-                                  Text(
-                                    'Sign In',
-                                    style: TextStyle(
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.w800,
-                                    ),
-                                  ),
-                                  SizedBox(width: 10),
-                                  Icon(
-                                    Icons.arrow_forward_rounded,
-                                    size: 21,
+                        const SizedBox(height: 20),
+                        // LOGIN BUTTON
+                        Obx(
+                              () => SizedBox(
+                            width: double.infinity,
+                            height: 56,
+                            child: DecoratedBox(
+                              decoration: BoxDecoration(
+                                gradient: controller.isLoading.value
+                                    ? const LinearGradient(
+                                  colors: [
+                                    AppColors.textLight,
+                                    AppColors.textSecondary,
+                                  ],
+                                )
+                                    : AppColors.primaryGradient,
+                                borderRadius: BorderRadius.circular(17),
+                                boxShadow: controller.isLoading.value
+                                    ? null
+                                    : [
+                                  BoxShadow(
+                                    color: AppColors.primary
+                                        .withValues(alpha: 0.28),
+                                    blurRadius: 18,
+                                    offset: const Offset(0, 8),
                                   ),
                                 ],
+                              ),
+                              child: ElevatedButton(
+                                onPressed: controller.isLoading.value
+                                    ? null
+                                    : controller.login,
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: Colors.transparent,
+                                  disabledBackgroundColor:
+                                  Colors.transparent,
+                                  foregroundColor: Colors.white,
+                                  disabledForegroundColor: Colors.white,
+                                  shadowColor: Colors.transparent,
+                                  elevation: 0,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius:
+                                    BorderRadius.circular(17),
+                                  ),
+                                ),
+                                child: controller.isLoading.value
+                                    ? const SizedBox(
+                                  height: 24,
+                                  width: 24,
+                                  child:
+                                  CircularProgressIndicator(
+                                    strokeWidth: 2.5,
+                                    color: Colors.white,
+                                  ),
+                                )
+                                    : const Row(
+                                  mainAxisAlignment:
+                                  MainAxisAlignment.center,
+                                  children: [
+                                    Text(
+                                      'Sign In',
+                                      style: TextStyle(
+                                        fontSize: 16,
+                                        fontWeight:
+                                        FontWeight.w800,
+                                      ),
+                                    ),
+                                    SizedBox(width: 10),
+                                    Icon(
+                                      Icons.arrow_forward_rounded,
+                                      size: 21,
+                                    ),
+                                  ],
+                                ),
                               ),
                             ),
                           ),
                         ),
 
-                        const SizedBox(height: 26),
-
-                        // ================= DIVIDER =================
+                        const SizedBox(height: 28),
+                        // DIVIDER
                         Row(
                           children: [
                             const Expanded(
@@ -281,19 +334,19 @@ class LoginView extends GetView<LoginController> {
                                 color: AppColors.border,
                               ),
                             ),
-
                             Padding(
-                              padding: const EdgeInsets.symmetric(
+                              padding:
+                              const EdgeInsets.symmetric(
                                 horizontal: 14,
                               ),
                               child: Text(
                                 'OR',
-                                style: theme.textTheme.bodySmall?.copyWith(
+                                style:
+                                theme.textTheme.bodySmall?.copyWith(
                                   fontWeight: FontWeight.w700,
                                 ),
                               ),
                             ),
-
                             const Expanded(
                               child: Divider(
                                 color: AppColors.border,
@@ -303,29 +356,34 @@ class LoginView extends GetView<LoginController> {
                         ),
 
                         const SizedBox(height: 24),
+                        // CREATE ACCOUNT
 
-                        // ================= REGISTER =================
                         Center(
-                          child: RichText(
-                            text: TextSpan(
-                              text: "Don't have an account? ",
-                              style: theme.textTheme.bodyMedium,
-                              children: [
-                                WidgetSpan(
-                                  child: GestureDetector(
-                                    onTap: () {},
-                                    child: const Text(
-                                      'Create Account',
-                                      style: TextStyle(
-                                        color: AppColors.primary,
-                                        fontSize: 14,
-                                        fontWeight: FontWeight.w800,
-                                      ),
-                                    ),
+                          child: Wrap(
+                            alignment: WrapAlignment.center,
+                            children: [
+                              Text(
+                                "Don't have an account? ",
+                                style: theme.textTheme.bodyMedium,
+                              ),
+
+                              GestureDetector(
+                                onTap: () {
+                                  // GO TO REGISTER SCREEN
+                                  Get.toNamed(
+                                    AppRoutes.register,
+                                  );
+                                },
+                                child: const Text(
+                                  'Create Account',
+                                  style: TextStyle(
+                                    color: AppColors.primary,
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w800,
                                   ),
                                 ),
-                              ],
-                            ),
+                              ),
+                            ],
                           ),
                         ),
                       ],
@@ -333,7 +391,7 @@ class LoginView extends GetView<LoginController> {
                   ),
 
                   const SizedBox(height: 22),
-
+                  // TERMS
                   Text(
                     'By continuing, you agree to our Terms & Privacy Policy',
                     textAlign: TextAlign.center,

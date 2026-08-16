@@ -13,14 +13,14 @@ class SplashController extends GetxController {
     super.onInit();
 
     debugPrint(
-      '========== SPLASH CONTROLLER STARTED ==========',
+      'SPLASH CONTROLLER STARTED',
     );
 
     _timer = Timer(
       const Duration(seconds: 3),
           () {
         debugPrint(
-          '========== GOING TO LOGIN ==========',
+          'GOING TO LOGIN',
         );
 
         Get.offNamed(AppRoutes.login);
@@ -31,7 +31,7 @@ class SplashController extends GetxController {
   @override
   void onClose() {
     debugPrint(
-      '========== SPLASH CONTROLLER CLOSED ==========',
+      'SPLASH CONTROLLER CLOSED',
     );
 
     _timer?.cancel();
