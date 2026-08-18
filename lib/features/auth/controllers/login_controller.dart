@@ -3,40 +3,25 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart' hide Response;
 import '../../../app/routes/app_routes.dart';
 import '../../../core/services/auth_service.dart';
-
+import '../../../core/services/auth_storage.dart';
 class LoginController extends GetxController {
-  // AUTH SERVICE
-
   final AuthService _authService = AuthService();
 
-  // TEXT CONTROLLERS
-
-  final TextEditingController emailController =
-  TextEditingController();
-
-  final TextEditingController passwordController =
-  TextEditingController();
-
-  // STATES
+  final TextEditingController emailController = TextEditingController();
+  final TextEditingController passwordController = TextEditingController();
 
   final RxBool isPasswordHidden = true.obs;
-
   final RxBool isLoading = false.obs;
-
-  // PASSWORD VISIBILITY
 
   void togglePasswordVisibility() {
     isPasswordHidden.value = !isPasswordHidden.value;
   }
-
-  // LOGIN
 
   Future<void> login() async {
     final String email = emailController.text.trim();
     final String password = passwordController.text.trim();
 
     // EMAIL VALIDATION
-
     if (email.isEmpty) {
       Get.snackbar(
         'Email Required',
@@ -56,7 +41,6 @@ class LoginController extends GetxController {
     }
 
     // PASSWORD VALIDATION
-
     if (password.isEmpty) {
       Get.snackbar(
         'Password Required',
@@ -67,7 +51,6 @@ class LoginController extends GetxController {
     }
 
     // API CALL
-
     try {
       isLoading.value = true;
 
@@ -80,61 +63,53 @@ class LoginController extends GetxController {
         email: email,
         password: password,
       );
-      // API RESPONSE
 
-      debugPrint(
-        'Status Code: ${response.statusCode}',
-      );
-
-      debugPrint(
-        'Response: ${response.data}',
-      );
-
+      debugPrint('Status Code: ${response.statusCode}');
+      debugPrint('Response: ${response.data}');
       debugPrint('');
 
       // SUCCESS
-
       if (response.statusCode == 200) {
         final dynamic data = response.data;
 
         if (data is Map && data['status'] == 'success') {
-          // GET TOKEN
-
           final String? token = data['token']?.toString();
 
-          debugPrint(
-            'Token received: ${token != null && token.isNotEmpty}',
+          // TOKEN SAVE
+          await AuthStorage.saveToken(token ?? '');
+
+          // USER INFO SAVE
+          final Map userData = data['data'] ?? {};
+          await AuthStorage.saveUserInfo(
+            firstName: userData['firstName']?.toString() ?? '',
+            lastName: userData['lastName']?.toString() ?? '',
+            email: userData['email']?.toString() ?? '',
+            mobile: userData['mobile']?.toString() ?? '',
+            photo: userData['photo']?.toString() ?? '',
           );
-          // SUCCESS MESSAGE
+
+          debugPrint('Token received: ${token != null && token.isNotEmpty}');
+          debugPrint('User: ${userData['firstName']} ${userData['lastName']}');
 
           Get.snackbar(
-            'Login Successful ',
+            'Login Successful',
             'Welcome back to TaskFlow!',
             snackPosition: SnackPosition.BOTTOM,
             duration: const Duration(seconds: 2),
           );
-          // GO TO HOME
 
-          await Future.delayed(
-            const Duration(milliseconds: 500),
-          );
-
+          await Future.delayed(const Duration(milliseconds: 500));
           Get.offNamed(AppRoutes.home);
-
           return;
         }
-        // API RETURNED 200 BUT LOGIN FAILED
 
         Get.snackbar(
           'Login Failed',
           'Email or password is incorrect.',
           snackPosition: SnackPosition.BOTTOM,
         );
-
         return;
       }
-
-      // OTHER STATUS CODE
 
       Get.snackbar(
         'Login Failed',
@@ -143,27 +118,18 @@ class LoginController extends GetxController {
       );
     }
 
-    // DIO ERROR
-
     on DioException catch (e) {
-      debugPrint('======================================');
+      debugPrint('=');
       debugPrint('LOGIN API ERROR');
       debugPrint('Message: ${e.message}');
-      debugPrint(
-        'Status Code: ${e.response?.statusCode}',
-      );
-      debugPrint(
-        'Response: ${e.response?.data}',
-      );
-      debugPrint('======================================');
+      debugPrint('Status Code: ${e.response?.statusCode}');
+      debugPrint('Response: ${e.response?.data}');
+      debugPrint('=');
 
-      String message =
-          'Unable to login. Please try again.';
+      String message = 'Unable to login. Please try again.';
 
       if (e.response?.data is Map) {
-        final Map errorData =
-        e.response!.data as Map;
-
+        final Map errorData = e.response!.data as Map;
         if (errorData['message'] != null) {
           message = errorData['message'].toString();
         }
@@ -176,34 +142,25 @@ class LoginController extends GetxController {
         duration: const Duration(seconds: 3),
       );
     }
-    // UNKNOWN ERROR
-
     catch (e) {
-      debugPrint('======================================');
+      debugPrint('=');
       debugPrint('UNEXPECTED LOGIN ERROR');
       debugPrint('$e');
-      debugPrint('======================================');
-
+      debugPrint('=');
       Get.snackbar(
         'Error',
         'Something went wrong. Please try again.',
         snackPosition: SnackPosition.BOTTOM,
       );
     }
-
-    // STOP LOADING
-
     finally {
       isLoading.value = false;
     }
   }
-  // DISPOSE
-
   @override
   void onClose() {
     emailController.dispose();
     passwordController.dispose();
-
     super.onClose();
   }
 }

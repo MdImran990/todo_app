@@ -51,7 +51,7 @@ class TaskView extends GetView<TaskController> {
         elevation: 5,
         onPressed: () {
           Get.toNamed(AppRoutes.addTask)?.then((_) {
-            controller.tasks.refresh(); // ✅ ফিরলে UI refresh
+            controller.tasks.refresh();
           });
         },
         child: const Icon(
@@ -67,7 +67,7 @@ class TaskView extends GetView<TaskController> {
         selectedIndex: 1,
         onDestinationSelected: (index) {
           if (index == 0) {
-            Get.offNamed(AppRoutes.home); // ✅ Home এ ফিরে যাও
+            Get.offNamed(AppRoutes.home);
           }
           if (index == 2) {
             Get.toNamed('/profile');
@@ -237,7 +237,7 @@ class TaskView extends GetView<TaskController> {
             ElevatedButton.icon(
               onPressed: () {
                 Get.toNamed(AppRoutes.addTask)?.then((_) {
-                  controller.tasks.refresh(); // ✅ refresh
+                  controller.tasks.refresh();
                 });
               },
               style: ElevatedButton.styleFrom(

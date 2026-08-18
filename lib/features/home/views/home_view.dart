@@ -189,7 +189,6 @@ class HomeView extends GetView<HomeController> {
               ),
 
               const SizedBox(height: 28),
-
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -216,16 +215,13 @@ class HomeView extends GetView<HomeController> {
                   ),
                 ],
               ),
-
               const SizedBox(height: 8),
-
               _buildTaskCard(
                 title: 'Complete Flutter Project',
                 subtitle: 'Today • High Priority',
                 icon: Icons.code_rounded,
                 iconBackground: const Color(0xFFEDEEFF),
               ),
-
               const SizedBox(height: 12),
 
               _buildTaskCard(
@@ -274,9 +270,8 @@ class HomeView extends GetView<HomeController> {
             }
 
             if (index == 1) {
-              Get.offNamed(AppRoutes.tasks); // ✅ fix
+              Get.offNamed(AppRoutes.tasks);
             }
-
             if (index == 2) {
               Get.toNamed('/profile');
             }
@@ -302,7 +297,6 @@ class HomeView extends GetView<HomeController> {
       ),
     );
   }
-
   Widget _buildMainSummaryCard() {
     return Container(
       width: double.infinity,
@@ -501,7 +495,6 @@ class HomeView extends GetView<HomeController> {
       ),
     );
   }
-
   Widget _buildTaskCard({
     required String title,
     required String subtitle,

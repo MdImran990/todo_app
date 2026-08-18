@@ -5,7 +5,6 @@ import '../network/api_client.dart';
 
 class AuthService {
   final Dio _dio = ApiClient.dio;
-
   // LOGIN
   Future<Response> login({
     required String email,

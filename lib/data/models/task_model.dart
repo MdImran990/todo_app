@@ -4,7 +4,6 @@ class TaskModel {
   final String description;
   final String status;
   final String createdDate;
-
   TaskModel({
     required this.id,
     required this.title,

@@ -1,36 +1,25 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart' hide Response;
-
 import '../../../app/routes/app_routes.dart';
 import '../../../core/services/auth_service.dart';
 
-class RegisterController extends GetxController {
-  final AuthService _authService = AuthService();
+class RegisterController extends GetxController {final AuthService _authService = AuthService();
   // TEXT CONTROLLERS
+  final TextEditingController firstNameController = TextEditingController();
 
-  final TextEditingController firstNameController =
-  TextEditingController();
+  final TextEditingController lastNameController = TextEditingController();
 
-  final TextEditingController lastNameController =
-  TextEditingController();
+  final TextEditingController emailController = TextEditingController();
 
-  final TextEditingController emailController =
-  TextEditingController();
+  final TextEditingController mobileController = TextEditingController();
 
-  final TextEditingController mobileController =
-  TextEditingController();
+  final TextEditingController passwordController = TextEditingController();
 
-  final TextEditingController passwordController =
-  TextEditingController();
-
-  final TextEditingController confirmPasswordController =
-  TextEditingController();
+  final TextEditingController confirmPasswordController = TextEditingController();
   // STATES
   final RxBool isPasswordHidden = true.obs;
-
   final RxBool isConfirmPasswordHidden = true.obs;
-
   final RxBool isLoading = false.obs;
   // PASSWORD VISIBILITY
 
@@ -156,7 +145,6 @@ class RegisterController extends GetxController {
         password: password,
       );
       // RESPONSE
-
       debugPrint(
         'REGISTER STATUS CODE: ${response.statusCode}',
       );
@@ -164,7 +152,6 @@ class RegisterController extends GetxController {
       debugPrint(
         'REGISTER RESPONSE: ${response.data}',
       );
-
       debugPrint('');
 
       // SUCCESS
@@ -245,11 +232,7 @@ class RegisterController extends GetxController {
         message,
       );
     }
-
-    // =======================================================
     // UNKNOWN ERROR
-    // =======================================================
-
     catch (e) {
       debugPrint(
         'Unexpected registration error: $e',
@@ -260,20 +243,13 @@ class RegisterController extends GetxController {
         'Something went wrong. Please try again.',
       );
     }
-
-    // =======================================================
     // STOP LOADING
-    // =======================================================
 
     finally {
       isLoading.value = false;
     }
   }
-
-  // =========================================================
   // ERROR SNACKBAR
-  // =========================================================
-
   void _showError(
       String title,
       String message,
@@ -285,11 +261,7 @@ class RegisterController extends GetxController {
       duration: const Duration(seconds: 3),
     );
   }
-
-  // =========================================================
   // DISPOSE
-  // =========================================================
-
   @override
   void onClose() {
     firstNameController.dispose();

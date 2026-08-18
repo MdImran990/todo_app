@@ -25,7 +25,6 @@ class TaskController extends GetxController {
     selectedFilter.value = index;
   }
 
-  // ✅ নতুন task add করার method
   void addTask(Map<String, dynamic> task) {
     tasks.add(task);
   }

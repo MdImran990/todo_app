@@ -25,14 +25,12 @@ class ForgotPasswordController extends GetxController {
       );
       return;
     }
-
     Get.snackbar(
       'Email Ready',
       'Email validation successful.',
       snackPosition: SnackPosition.BOTTOM,
     );
   }
-
   @override
   void onClose() {
     emailController.dispose();

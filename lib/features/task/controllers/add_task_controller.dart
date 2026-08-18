@@ -12,7 +12,6 @@ class AddTaskController extends GetxController {
   void changePriority(String priority) {
     selectedPriority.value = priority;
   }
-
   void createTask() {
     final title = titleController.text.trim();
     final description = descriptionController.text.trim();

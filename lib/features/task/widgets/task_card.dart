@@ -12,9 +12,7 @@ class TaskCard extends StatelessWidget {
     required this.status,
   });
 
-  static const Color primaryColor =
-  Color(0xFF5B5FEF);
-
+  static const Color primaryColor = Color(0xFF5B5FEF);
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -32,10 +30,7 @@ class TaskCard extends StatelessWidget {
       ),
       child: Row(
         children: [
-          // =================================================
           // ICON
-          // =================================================
-
           Container(
             width: 52,
             height: 52,
@@ -51,10 +46,7 @@ class TaskCard extends StatelessWidget {
           ),
 
           const SizedBox(width: 14),
-
-          // =================================================
           // TASK INFO
-          // =================================================
 
           Expanded(
             child: Column(
@@ -118,9 +110,7 @@ class TaskCard extends StatelessWidget {
               ],
             ),
           ),
-
           const SizedBox(width: 8),
-
           const Icon(
             Icons.arrow_forward_ios_rounded,
             size: 15,
