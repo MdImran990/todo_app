@@ -16,9 +16,7 @@ class ForgotPasswordView extends GetView<ForgotPasswordController> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // =====================================================
               // BACK BUTTON
-              // =====================================================
 
               GestureDetector(
                 onTap: () => Get.back(),
@@ -44,9 +42,7 @@ class ForgotPasswordView extends GetView<ForgotPasswordController> {
 
               const SizedBox(height: 38),
 
-              // =====================================================
               // ICON
-              // =====================================================
 
               Center(
                 child: Container(
@@ -79,9 +75,7 @@ class ForgotPasswordView extends GetView<ForgotPasswordController> {
 
               const SizedBox(height: 30),
 
-              // =====================================================
               // TITLE
-              // =====================================================
 
               const Center(
                 child: Text(
@@ -97,9 +91,7 @@ class ForgotPasswordView extends GetView<ForgotPasswordController> {
 
               const SizedBox(height: 10),
 
-              // =====================================================
               // DESCRIPTION
-              // =====================================================
 
               const Center(
                 child: Text(
@@ -115,9 +107,7 @@ class ForgotPasswordView extends GetView<ForgotPasswordController> {
 
               const SizedBox(height: 40),
 
-              // =====================================================
               // CARD
-              // =====================================================
 
               Container(
                 width: double.infinity,
@@ -145,10 +135,7 @@ class ForgotPasswordView extends GetView<ForgotPasswordController> {
                     ),
 
                     const SizedBox(height: 10),
-
-                    // =================================================
                     // EMAIL FIELD
-                    // =================================================
 
                     TextField(
                       controller: controller.emailController,
@@ -193,10 +180,7 @@ class ForgotPasswordView extends GetView<ForgotPasswordController> {
                     ),
 
                     const SizedBox(height: 24),
-
-                    // =================================================
                     // CONTINUE BUTTON
-                    // =================================================
 
                     SizedBox(
                       width: double.infinity,
@@ -240,10 +224,7 @@ class ForgotPasswordView extends GetView<ForgotPasswordController> {
               ),
 
               const SizedBox(height: 28),
-
-              // =====================================================
               // BACK TO LOGIN
-              // =====================================================
 
               Center(
                 child: GestureDetector(

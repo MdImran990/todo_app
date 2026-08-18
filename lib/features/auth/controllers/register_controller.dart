@@ -7,10 +7,7 @@ import '../../../core/services/auth_service.dart';
 
 class RegisterController extends GetxController {
   final AuthService _authService = AuthService();
-
-  // =========================================================
   // TEXT CONTROLLERS
-  // =========================================================
 
   final TextEditingController firstNameController =
   TextEditingController();
@@ -29,20 +26,13 @@ class RegisterController extends GetxController {
 
   final TextEditingController confirmPasswordController =
   TextEditingController();
-
-  // =========================================================
   // STATES
-  // =========================================================
-
   final RxBool isPasswordHidden = true.obs;
 
   final RxBool isConfirmPasswordHidden = true.obs;
 
   final RxBool isLoading = false.obs;
-
-  // =========================================================
   // PASSWORD VISIBILITY
-  // =========================================================
 
   void togglePasswordVisibility() {
     isPasswordHidden.value =
@@ -53,10 +43,7 @@ class RegisterController extends GetxController {
     isConfirmPasswordHidden.value =
     !isConfirmPasswordHidden.value;
   }
-
-  // =========================================================
   // REGISTER
-  // =========================================================
 
   Future<void> register() async {
     final String firstName =
@@ -205,10 +192,7 @@ class RegisterController extends GetxController {
           return;
         }
       }
-
-      // =====================================================
       // FAILED
-      // =====================================================
 
       String message =
           'Registration failed. Please try again.';
@@ -229,12 +213,10 @@ class RegisterController extends GetxController {
       );
     }
 
-    // =======================================================
     // DIO ERROR
-    // =======================================================
 
     on DioException catch (e) {
-      debugPrint('======================================');
+      debugPrint('');
       debugPrint('REGISTRATION API ERROR');
       debugPrint('Message: ${e.message}');
       debugPrint(
@@ -243,7 +225,7 @@ class RegisterController extends GetxController {
       debugPrint(
         'Response: ${e.response?.data}',
       );
-      debugPrint('======================================');
+      debugPrint('');
 
       String message =
           'Unable to create account. Please try again.';

@@ -6,10 +6,7 @@ import '../network/api_client.dart';
 class AuthService {
   final Dio _dio = ApiClient.dio;
 
-  // =========================================================
   // LOGIN
-  // =========================================================
-
   Future<Response> login({
     required String email,
     required String password,
@@ -25,9 +22,7 @@ class AuthService {
     return response;
   }
 
-  // =========================================================
   // REGISTER
-  // =========================================================
 
   Future<Response> register({
     required String firstName,
@@ -51,10 +46,7 @@ class AuthService {
 
     return response;
   }
-
-  // =========================================================
   // FORGOT PASSWORD - VERIFY EMAIL
-  // =========================================================
 
   Future<Response> verifyRecoveryEmail({
     required String email,

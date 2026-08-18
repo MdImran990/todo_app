@@ -27,7 +27,6 @@ class SplashController extends GetxController {
       },
     );
   }
-
   @override
   void onClose() {
     debugPrint(

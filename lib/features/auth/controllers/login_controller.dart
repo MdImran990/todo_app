@@ -5,15 +5,11 @@ import '../../../app/routes/app_routes.dart';
 import '../../../core/services/auth_service.dart';
 
 class LoginController extends GetxController {
-  // =========================================================
   // AUTH SERVICE
-  // =========================================================
 
   final AuthService _authService = AuthService();
 
-  // =========================================================
   // TEXT CONTROLLERS
-  // =========================================================
 
   final TextEditingController emailController =
   TextEditingController();
@@ -21,33 +17,25 @@ class LoginController extends GetxController {
   final TextEditingController passwordController =
   TextEditingController();
 
-  // =========================================================
   // STATES
-  // =========================================================
 
   final RxBool isPasswordHidden = true.obs;
 
   final RxBool isLoading = false.obs;
 
-  // =========================================================
   // PASSWORD VISIBILITY
-  // =========================================================
 
   void togglePasswordVisibility() {
     isPasswordHidden.value = !isPasswordHidden.value;
   }
 
-  // =========================================================
   // LOGIN
-  // =========================================================
 
   Future<void> login() async {
     final String email = emailController.text.trim();
     final String password = passwordController.text.trim();
 
-    // =======================================================
     // EMAIL VALIDATION
-    // =======================================================
 
     if (email.isEmpty) {
       Get.snackbar(
@@ -67,9 +55,7 @@ class LoginController extends GetxController {
       return;
     }
 
-    // =======================================================
     // PASSWORD VALIDATION
-    // =======================================================
 
     if (password.isEmpty) {
       Get.snackbar(
@@ -80,26 +66,21 @@ class LoginController extends GetxController {
       return;
     }
 
-    // =======================================================
     // API CALL
-    // =======================================================
 
     try {
       isLoading.value = true;
 
-      debugPrint('======================================');
+      debugPrint('');
       debugPrint('TASKFLOW LOGIN START');
       debugPrint('Email: $email');
-      debugPrint('======================================');
+      debugPrint('');
 
       final Response response = await _authService.login(
         email: email,
         password: password,
       );
-
-      // =====================================================
       // API RESPONSE
-      // =====================================================
 
       debugPrint(
         'Status Code: ${response.statusCode}',
@@ -109,29 +90,22 @@ class LoginController extends GetxController {
         'Response: ${response.data}',
       );
 
-      debugPrint('======================================');
+      debugPrint('');
 
-      // =====================================================
       // SUCCESS
-      // =====================================================
 
       if (response.statusCode == 200) {
         final dynamic data = response.data;
 
         if (data is Map && data['status'] == 'success') {
-          // -----------------------------------------------
           // GET TOKEN
-          // -----------------------------------------------
 
           final String? token = data['token']?.toString();
 
           debugPrint(
             'Token received: ${token != null && token.isNotEmpty}',
           );
-
-          // -----------------------------------------------
           // SUCCESS MESSAGE
-          // -----------------------------------------------
 
           Get.snackbar(
             'Login Successful ',
@@ -139,10 +113,7 @@ class LoginController extends GetxController {
             snackPosition: SnackPosition.BOTTOM,
             duration: const Duration(seconds: 2),
           );
-
-          // -----------------------------------------------
           // GO TO HOME
-          // -----------------------------------------------
 
           await Future.delayed(
             const Duration(milliseconds: 500),
@@ -152,10 +123,7 @@ class LoginController extends GetxController {
 
           return;
         }
-
-        // ===================================================
         // API RETURNED 200 BUT LOGIN FAILED
-        // ===================================================
 
         Get.snackbar(
           'Login Failed',
@@ -166,9 +134,7 @@ class LoginController extends GetxController {
         return;
       }
 
-      // =====================================================
       // OTHER STATUS CODE
-      // =====================================================
 
       Get.snackbar(
         'Login Failed',
@@ -177,9 +143,7 @@ class LoginController extends GetxController {
       );
     }
 
-    // =======================================================
     // DIO ERROR
-    // =======================================================
 
     on DioException catch (e) {
       debugPrint('======================================');
@@ -212,10 +176,7 @@ class LoginController extends GetxController {
         duration: const Duration(seconds: 3),
       );
     }
-
-    // =======================================================
     // UNKNOWN ERROR
-    // =======================================================
 
     catch (e) {
       debugPrint('======================================');
@@ -230,18 +191,13 @@ class LoginController extends GetxController {
       );
     }
 
-    // =======================================================
     // STOP LOADING
-    // =======================================================
 
     finally {
       isLoading.value = false;
     }
   }
-
-  // =========================================================
   // DISPOSE
-  // =========================================================
 
   @override
   void onClose() {

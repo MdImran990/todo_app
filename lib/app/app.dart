@@ -12,7 +12,6 @@ class TaskFlowApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return GetMaterialApp(
       debugShowCheckedModeBanner: false,
-
       // App Information
       title: 'TaskFlow',
 

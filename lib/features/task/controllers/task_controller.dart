@@ -1,84 +1,51 @@
-import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 class TaskController extends GetxController {
-  // =========================================================
-  // STATE
-  // =========================================================
+  final RxInt selectedFilter = 0.obs;
 
-  final RxBool isLoading = false.obs;
+  final RxList<Map<String, dynamic>> tasks = <Map<String, dynamic>>[
+    {
+      'title': 'Complete Flutter Project',
+      'subtitle': 'Today • High Priority',
+      'status': 'New',
+    },
+    {
+      'title': 'Review API Integration',
+      'subtitle': 'Tomorrow • Medium Priority',
+      'status': 'Progress',
+    },
+    {
+      'title': 'Update Profile',
+      'subtitle': 'Friday • Low Priority',
+      'status': 'Completed',
+    },
+  ].obs;
 
-  final RxString selectedStatus = 'All'.obs;
-
-  // =========================================================
-  // TASK LIST
-  // =========================================================
-
-  final RxList<Map<String, dynamic>> tasks =
-      <Map<String, dynamic>>[].obs;
-
-  // =========================================================
-  // FILTERS
-  // =========================================================
-
-  final List<String> statusFilters = [
-    'All',
-    'New',
-    'Progress',
-    'Completed',
-    'Cancelled',
-  ];
-
-  // =========================================================
-  // CHANGE FILTER
-  // =========================================================
-
-  void changeStatus(String status) {
-    selectedStatus.value = status;
-
-    // API integration আমরা পরের ধাপে করব।
-    debugPrint('Selected Status: $status');
+  void changeFilter(int index) {
+    selectedFilter.value = index;
   }
 
-  // =========================================================
-  // LOAD TASKS
-  // =========================================================
+  // ✅ নতুন task add করার method
+  void addTask(Map<String, dynamic> task) {
+    tasks.add(task);
+  }
 
-  Future<void> getTasks() async {
-    try {
-      isLoading.value = true;
-
-      // API integration next step.
-      //
-      // এখানে:
-      // listTaskByStatus
-      // API call হবে।
-
-      await Future.delayed(
-        const Duration(milliseconds: 500),
-      );
-
-    } catch (e) {
-      debugPrint('Task Error: $e');
-
-      Get.snackbar(
-        'Error',
-        'Unable to load tasks.',
-        snackPosition: SnackPosition.BOTTOM,
-      );
-    } finally {
-      isLoading.value = false;
+  List<Map<String, dynamic>> get filteredTasks {
+    if (selectedFilter.value == 0) {
+      return tasks;
     }
-  }
 
-  // =========================================================
-  // INIT
-  // =========================================================
+    final statusList = [
+      'New',
+      'Progress',
+      'Completed',
+    ];
 
-  @override
-  void onInit() {
-    super.onInit();
-
-    getTasks();
+    final selectedStatus = statusList[selectedFilter.value - 1];
+    return tasks
+        .where(
+          (task) => task['status'] == selectedStatus,
+    )
+        .toList();
   }
 }
