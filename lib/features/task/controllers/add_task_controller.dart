@@ -4,71 +4,89 @@ import 'package:get/get.dart';
 import 'task_controller.dart';
 
 class AddTaskController extends GetxController {
-  final titleController = TextEditingController();
-  final descriptionController = TextEditingController();
+  // TEXT CONTROLLERS
+
+  final TextEditingController titleController =
+  TextEditingController();
+
+  final TextEditingController descriptionController =
+  TextEditingController();
+
+  // PRIORITY
+
 
   final RxString selectedPriority = 'Medium'.obs;
+
+  // CHANGE PRIORITY
 
   void changePriority(String priority) {
     selectedPriority.value = priority;
   }
-  void createTask() {
-    final title = titleController.text.trim();
-    final description = descriptionController.text.trim();
 
-    debugPrint('=== CREATE TASK CALLED ===');
-    debugPrint('Title: $title');
-    debugPrint('Priority: ${selectedPriority.value}');
+  // ADD TASK
+
+  void addTask() {
+    final title = titleController.text.trim();
+
+    final description =
+    descriptionController.text.trim();
+
+    // VALIDATION
 
     if (title.isEmpty) {
       Get.snackbar(
-        'Task Required',
+        'Task Title Required',
         'Please enter a task title.',
         snackPosition: SnackPosition.BOTTOM,
+        margin: const EdgeInsets.all(16),
       );
+
       return;
     }
 
-    // TaskController registered আছে কিনা চেক
-    final bool isRegistered = Get.isRegistered<TaskController>();
-    debugPrint('TaskController registered: $isRegistered');
+    // GET TASK CONTROLLER
 
-    if (!isRegistered) {
-      debugPrint('ERROR: TaskController not found!');
-      Get.snackbar(
-        'Error',
-        'Something went wrong. Please try again.',
-        snackPosition: SnackPosition.BOTTOM,
-      );
-      return;
+    TaskController taskController;
+
+    if (Get.isRegistered<TaskController>()) {
+      taskController = Get.find<TaskController>();
+    } else {
+      taskController = Get.put(TaskController());
     }
+    // ADD TASK
 
-    final taskController = Get.find<TaskController>();
-    debugPrint('Tasks before add: ${taskController.tasks.length}');
-
-    taskController.addTask({
-      'title': title,
-      'subtitle': description.isNotEmpty ? description : 'No description',
-      'status': 'New',
-      'priority': selectedPriority.value,
-    });
-
-    debugPrint('Tasks after add: ${taskController.tasks.length}');
+    taskController.addTask(
+      title: title,
+      description: description,
+      priority: selectedPriority.value,
+    );
+    // SUCCESS MESSAGE
 
     Get.snackbar(
-      'Success',
-      'Task created successfully.',
+      'Task Added Successfully',
+      '$title has been added to your tasks.',
       snackPosition: SnackPosition.BOTTOM,
+      margin: const EdgeInsets.all(16),
       duration: const Duration(seconds: 2),
     );
+    // CLEAR FIELDS
+
+    titleController.clear();
+    descriptionController.clear();
+
+    selectedPriority.value = 'Medium';
+    // BACK TO TASK SCREEN
 
     Get.back();
   }
+
+  // DISPOSE
 
   @override
   void onClose() {
     titleController.dispose();
     descriptionController.dispose();
+
     super.onClose();
   }
 }

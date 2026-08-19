@@ -16,6 +16,10 @@ class AddTaskView extends GetView<AddTaskController> {
     return Scaffold(
       backgroundColor: backgroundColor,
 
+      // =====================================================
+      // APP BAR
+      // =====================================================
+
       appBar: AppBar(
         backgroundColor: backgroundColor,
         elevation: 0,
@@ -41,12 +45,25 @@ class AddTaskView extends GetView<AddTaskController> {
         ),
       ),
 
+      // =====================================================
+      // BODY
+      // =====================================================
+
       body: SafeArea(
         child: SingleChildScrollView(
-          padding: const EdgeInsets.fromLTRB(20, 10, 20, 30),
+          padding: const EdgeInsets.fromLTRB(
+            20,
+            10,
+            20,
+            30,
+          ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+
+              // =================================================
+              // HEADER
+              // =================================================
 
               const Text(
                 'Create a new task',
@@ -69,6 +86,10 @@ class AddTaskView extends GetView<AddTaskController> {
 
               const SizedBox(height: 30),
 
+              // =================================================
+              // TASK TITLE
+              // =================================================
+
               const Text(
                 'Task Title',
                 style: TextStyle(
@@ -85,7 +106,9 @@ class AddTaskView extends GetView<AddTaskController> {
                 textInputAction: TextInputAction.next,
                 decoration: InputDecoration(
                   hintText: 'Enter task title',
-                  hintStyle: const TextStyle(color: mutedColor),
+                  hintStyle: const TextStyle(
+                    color: mutedColor,
+                  ),
                   prefixIcon: const Icon(
                     Icons.task_alt_rounded,
                     color: primaryColor,
@@ -105,6 +128,10 @@ class AddTaskView extends GetView<AddTaskController> {
 
               const SizedBox(height: 24),
 
+              // =================================================
+              // DESCRIPTION
+              // =================================================
+
               const Text(
                 'Description',
                 style: TextStyle(
@@ -121,7 +148,9 @@ class AddTaskView extends GetView<AddTaskController> {
                 maxLines: 5,
                 decoration: InputDecoration(
                   hintText: 'Write something about this task...',
-                  hintStyle: const TextStyle(color: mutedColor),
+                  hintStyle: const TextStyle(
+                    color: mutedColor,
+                  ),
                   filled: true,
                   fillColor: Colors.white,
                   border: OutlineInputBorder(
@@ -133,6 +162,10 @@ class AddTaskView extends GetView<AddTaskController> {
               ),
 
               const SizedBox(height: 24),
+
+              // =================================================
+              // PRIORITY
+              // =================================================
 
               const Text(
                 'Priority',
@@ -151,19 +184,26 @@ class AddTaskView extends GetView<AddTaskController> {
                     _priorityButton(
                       title: 'Low',
                       icon: Icons.keyboard_arrow_down_rounded,
-                      selected: controller.selectedPriority.value == 'Low',
+                      selected:
+                      controller.selectedPriority.value == 'Low',
                     ),
+
                     const SizedBox(width: 10),
+
                     _priorityButton(
                       title: 'Medium',
                       icon: Icons.remove_rounded,
-                      selected: controller.selectedPriority.value == 'Medium',
+                      selected:
+                      controller.selectedPriority.value == 'Medium',
                     ),
+
                     const SizedBox(width: 10),
+
                     _priorityButton(
                       title: 'High',
                       icon: Icons.keyboard_arrow_up_rounded,
-                      selected: controller.selectedPriority.value == 'High',
+                      selected:
+                      controller.selectedPriority.value == 'High',
                     ),
                   ],
                 ),
@@ -171,11 +211,15 @@ class AddTaskView extends GetView<AddTaskController> {
 
               const SizedBox(height: 35),
 
+              // =================================================
+              // ADD TASK BUTTON
+              // =================================================
+
               SizedBox(
                 width: double.infinity,
                 height: 56,
                 child: ElevatedButton.icon(
-                  onPressed: controller.createTask,
+                  onPressed: controller.addTask,
                   style: ElevatedButton.styleFrom(
                     backgroundColor: primaryColor,
                     foregroundColor: Colors.white,
@@ -184,7 +228,9 @@ class AddTaskView extends GetView<AddTaskController> {
                       borderRadius: BorderRadius.circular(17),
                     ),
                   ),
-                  icon: const Icon(Icons.add_task_rounded),
+                  icon: const Icon(
+                    Icons.add_task_rounded,
+                  ),
                   label: const Text(
                     'Create Task',
                     style: TextStyle(
@@ -201,6 +247,10 @@ class AddTaskView extends GetView<AddTaskController> {
     );
   }
 
+  // =====================================================
+  // PRIORITY BUTTON
+  // =====================================================
+
   Widget _priorityButton({
     required String title,
     required IconData icon,
@@ -215,10 +265,14 @@ class AddTaskView extends GetView<AddTaskController> {
           duration: const Duration(milliseconds: 200),
           height: 48,
           decoration: BoxDecoration(
-            color: selected ? primaryColor : Colors.white,
+            color: selected
+                ? primaryColor
+                : Colors.white,
             borderRadius: BorderRadius.circular(14),
             border: Border.all(
-              color: selected ? primaryColor : Colors.transparent,
+              color: selected
+                  ? primaryColor
+                  : Colors.transparent,
             ),
           ),
           child: Row(
@@ -227,13 +281,17 @@ class AddTaskView extends GetView<AddTaskController> {
               Icon(
                 icon,
                 size: 19,
-                color: selected ? Colors.white : primaryColor,
+                color: selected
+                    ? Colors.white
+                    : primaryColor,
               ),
               const SizedBox(width: 5),
               Text(
                 title,
                 style: TextStyle(
-                  color: selected ? Colors.white : textColor,
+                  color: selected
+                      ? Colors.white
+                      : textColor,
                   fontSize: 12,
                   fontWeight: FontWeight.w700,
                 ),

@@ -54,7 +54,6 @@ class AuthStorage {
       'photo': await _storage.read(key: _photoKey) ?? '',
     };
   }
-
   // CLEAR ALL
   static Future<void> clearAll() async {
     await _storage.deleteAll();
