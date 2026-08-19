@@ -1,10 +1,28 @@
 import 'package:get/get.dart';
 
+import '../../../core/services/auth_storage.dart';
+
 class HomeController extends GetxController {
-  // Current bottom navigation index
   final RxInt selectedIndex = 0.obs;
 
-  // Change bottom navigation
+  // ✅ User info
+  final RxString firstName = ''.obs;
+  final RxString lastName = ''.obs;
+
+  String get fullName => '${firstName.value} ${lastName.value}'.trim();
+
+  @override
+  void onInit() {
+    super.onInit();
+    loadUserInfo();
+  }
+
+  Future<void> loadUserInfo() async {
+    final info = await AuthStorage.getUserInfo();
+    firstName.value = info['firstName'] ?? '';
+    lastName.value = info['lastName'] ?? '';
+  }
+
   void changeBottomNav(int index) {
     selectedIndex.value = index;
   }

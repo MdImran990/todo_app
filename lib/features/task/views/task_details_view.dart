@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-
 import '../controllers/task_details_controller.dart';
 
 class TaskDetailsView extends GetView<TaskDetailsController> {
@@ -15,12 +14,13 @@ class TaskDetailsView extends GetView<TaskDetailsController> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: backgroundColor,
+
       appBar: AppBar(
         backgroundColor: backgroundColor,
         elevation: 0,
         scrolledUnderElevation: 0,
         leading: IconButton(
-          onPressed: Get.back,
+          onPressed: () => Get.back(),
           icon: const Icon(
             Icons.arrow_back_ios_new_rounded,
             color: textColor,
@@ -36,241 +36,246 @@ class TaskDetailsView extends GetView<TaskDetailsController> {
         ),
         actions: [
           IconButton(
-            onPressed: _showEditDialog,
-            icon: const Icon(
-              Icons.edit_rounded,
-              color: primaryColor,
-            ),
-          ),
-          IconButton(
-            onPressed: controller.confirmDelete,
+            onPressed: controller.deleteTask,
             icon: const Icon(
               Icons.delete_outline_rounded,
-              color: Colors.redAccent,
+              color: Colors.red,
             ),
           ),
         ],
       ),
-      body: GetBuilder<TaskDetailsController>(
-        builder: (controller) {
-          if (controller.task == null) {
-            return const Center(child: Text('Task not found'));
-          }
 
-          return SingleChildScrollView(
-            padding: const EdgeInsets.all(20),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Container(
-                  width: double.infinity,
-                  padding: const EdgeInsets.all(22),
-                  decoration: BoxDecoration(
-                    gradient: const LinearGradient(
-                      colors: [
-                        Color(0xFF5B5FEF),
-                        Color(0xFF7B61FF),
-                      ],
+      body: SafeArea(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.fromLTRB(20, 10, 20, 30),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+
+              // TITLE
+              const Text(
+                'Task Title',
+                style: TextStyle(
+                  color: textColor,
+                  fontSize: 15,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+              const SizedBox(height: 10),
+              TextField(
+                controller: controller.titleController,
+                textInputAction: TextInputAction.next,
+                decoration: InputDecoration(
+                  hintText: 'Enter task title',
+                  hintStyle: const TextStyle(color: mutedColor),
+                  prefixIcon: const Icon(
+                    Icons.task_alt_rounded,
+                    color: primaryColor,
+                  ),
+                  filled: true,
+                  fillColor: Colors.white,
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(16),
+                    borderSide: BorderSide.none,
+                  ),
+                  contentPadding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 17,
+                  ),
+                ),
+              ),
+
+              const SizedBox(height: 24),
+
+              // DESCRIPTION
+              const Text(
+                'Description',
+                style: TextStyle(
+                  color: textColor,
+                  fontSize: 15,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+              const SizedBox(height: 10),
+              TextField(
+                controller: controller.descriptionController,
+                maxLines: 4,
+                decoration: InputDecoration(
+                  hintText: 'Write something about this task...',
+                  hintStyle: const TextStyle(color: mutedColor),
+                  filled: true,
+                  fillColor: Colors.white,
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(16),
+                    borderSide: BorderSide.none,
+                  ),
+                  contentPadding: const EdgeInsets.all(16),
+                ),
+              ),
+
+              const SizedBox(height: 24),
+
+              // STATUS
+              const Text(
+                'Status',
+                style: TextStyle(
+                  color: textColor,
+                  fontSize: 15,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+              const SizedBox(height: 12),
+              Obx(() => Row(
+                children: [
+                  _statusButton('New', Icons.fiber_new_rounded),
+                  const SizedBox(width: 10),
+                  _statusButton('Progress', Icons.timelapse_rounded),
+                  const SizedBox(width: 10),
+                  _statusButton('Completed', Icons.check_circle_outline_rounded),
+                ],
+              )),
+
+              const SizedBox(height: 24),
+
+              // PRIORITY
+              const Text(
+                'Priority',
+                style: TextStyle(
+                  color: textColor,
+                  fontSize: 15,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+              const SizedBox(height: 12),
+              Obx(() => Row(
+                children: [
+                  _priorityButton('Low', Icons.keyboard_arrow_down_rounded),
+                  const SizedBox(width: 10),
+                  _priorityButton('Medium', Icons.remove_rounded),
+                  const SizedBox(width: 10),
+                  _priorityButton('High', Icons.keyboard_arrow_up_rounded),
+                ],
+              )),
+
+              const SizedBox(height: 35),
+
+              // UPDATE BUTTON
+              SizedBox(
+                width: double.infinity,
+                height: 56,
+                child: ElevatedButton.icon(
+                  onPressed: controller.updateTask,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: primaryColor,
+                    foregroundColor: Colors.white,
+                    elevation: 0,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(17),
                     ),
-                    borderRadius: BorderRadius.circular(26),
                   ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        controller.title,
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 25,
-                          fontWeight: FontWeight.w800,
-                        ),
-                      ),
-                      const SizedBox(height: 10),
-                      Text(
-                        controller.subtitle,
-                        style: const TextStyle(
-                          color: Colors.white70,
-                        ),
-                      ),
-                    ],
+                  icon: const Icon(Icons.save_rounded),
+                  label: const Text(
+                    'Update Task',
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w800,
+                    ),
                   ),
                 ),
-                const SizedBox(height: 24),
-                _info('Priority', controller.priority),
-                _info('Status', controller.status),
-                _info(
-                  'Description',
-                  controller.description.isEmpty
-                      ? 'No description'
-                      : controller.description,
-                ),
-                const SizedBox(height: 24),
-                const Text(
-                  'Change Status',
-                  style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.w800,
-                  ),
-                ),
-                const SizedBox(height: 12),
-                Row(
-                  children: [
-                    _statusButton('New'),
-                    const SizedBox(width: 8),
-                    _statusButton('Progress'),
-                    const SizedBox(width: 8),
-                    _statusButton('Completed'),
-                  ],
-                ),
-                const SizedBox(height: 30),
-                SizedBox(
-                  width: double.infinity,
-                  child: ElevatedButton.icon(
-                    onPressed: _showEditDialog,
-                    icon: const Icon(Icons.edit_rounded),
-                    label: const Text('Edit Task'),
-                  ),
-                ),
-                const SizedBox(height: 12),
-                SizedBox(
-                  width: double.infinity,
-                  child: OutlinedButton.icon(
-                    onPressed: controller.confirmDelete,
-                    icon: const Icon(Icons.delete_outline_rounded),
-                    label: const Text('Delete Task'),
-                  ),
-                ),
-              ],
-            ),
-          );
-        },
-      ),
-    );
-  }
-
-  Widget _info(String title, String value) {
-    return Container(
-      width: double.infinity,
-      margin: const EdgeInsets.only(bottom: 12),
-      padding: const EdgeInsets.all(18),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(18),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(title, style: const TextStyle(color: mutedColor)),
-          const SizedBox(height: 6),
-          Text(
-            value,
-            style: const TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.w700,
-            ),
+              ),
+            ],
           ),
-        ],
+        ),
       ),
     );
   }
 
-  Widget _statusButton(String status) {
+  Widget _statusButton(String status, IconData icon) {
+    final bool selected = controller.selectedStatus.value == status;
+    final Color color;
+    switch (status) {
+      case 'Completed':
+        color = Colors.green;
+        break;
+      case 'Progress':
+        color = Colors.orange;
+        break;
+      default:
+        color = primaryColor;
+    }
+
     return Expanded(
       child: GestureDetector(
-        onTap: () => controller.updateStatus(status),
-        child: Container(
+        onTap: () => controller.changeStatus(status),
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 200),
           height: 48,
-          alignment: Alignment.center,
           decoration: BoxDecoration(
-            color: controller.status == status
-                ? primaryColor
-                : Colors.white,
+            color: selected ? color : Colors.white,
             borderRadius: BorderRadius.circular(14),
-          ),
-          child: Text(
-            status,
-            style: TextStyle(
-              color: controller.status == status
-                  ? Colors.white
-                  : textColor,
-              fontWeight: FontWeight.w700,
+            border: Border.all(
+              color: selected ? color : Colors.transparent,
             ),
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(
+                icon,
+                size: 17,
+                color: selected ? Colors.white : color,
+              ),
+              const SizedBox(width: 4),
+              Text(
+                status,
+                style: TextStyle(
+                  color: selected ? Colors.white : textColor,
+                  fontSize: 11,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+            ],
           ),
         ),
       ),
     );
   }
 
-  void _showEditDialog() {
-    controller.titleController.text = controller.title;
-    controller.descriptionController.text =
-        controller.description;
-    controller.selectedPriority.value = controller.priority;
-
-    Get.dialog(
-      AlertDialog(
-        title: const Text('Edit Task'),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            TextField(
-              controller: controller.titleController,
-              decoration: const InputDecoration(
-                labelText: 'Task Title',
-              ),
+  Widget _priorityButton(String priority, IconData icon) {
+    final bool selected = controller.selectedPriority.value == priority;
+    return Expanded(
+      child: GestureDetector(
+        onTap: () => controller.changePriority(priority),
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 200),
+          height: 48,
+          decoration: BoxDecoration(
+            color: selected ? primaryColor : Colors.white,
+            borderRadius: BorderRadius.circular(14),
+            border: Border.all(
+              color: selected ? primaryColor : Colors.transparent,
             ),
-            const SizedBox(height: 16),
-            TextField(
-              controller: controller.descriptionController,
-              maxLines: 4,
-              decoration: const InputDecoration(
-                labelText: 'Description',
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(
+                icon,
+                size: 19,
+                color: selected ? Colors.white : primaryColor,
               ),
-            ),
-            const SizedBox(height: 16),
-            Obx(
-                  () => DropdownButton<String>(
-                value: controller.selectedPriority.value,
-                isExpanded: true,
-                items: const [
-                  DropdownMenuItem(
-                    value: 'Low',
-                    child: Text('Low'),
-                  ),
-                  DropdownMenuItem(
-                    value: 'Medium',
-                    child: Text('Medium'),
-                  ),
-                  DropdownMenuItem(
-                    value: 'High',
-                    child: Text('High'),
-                  ),
-                ],
-                onChanged: (value) {
-                  if (value != null) {
-                    controller.changePriority(value);
-                  }
-                },
+              const SizedBox(width: 5),
+              Text(
+                priority,
+                style: TextStyle(
+                  color: selected ? Colors.white : textColor,
+                  fontSize: 12,
+                  fontWeight: FontWeight.w700,
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
-        actions: [
-          TextButton(
-            onPressed: Get.back,
-            child: const Text('Cancel'),
-          ),
-          ElevatedButton(
-            onPressed: () {
-              final success = controller.saveTask();
-
-              if (success) {
-                Get.back();
-              }
-            },
-            child: const Text('Save'),
-          ),
-        ],
       ),
     );
   }

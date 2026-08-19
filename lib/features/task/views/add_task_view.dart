@@ -219,7 +219,7 @@ class AddTaskView extends GetView<AddTaskController> {
                 width: double.infinity,
                 height: 56,
                 child: ElevatedButton.icon(
-                  onPressed: controller.addTask,
+                    onPressed: controller.createTask,
                   style: ElevatedButton.styleFrom(
                     backgroundColor: primaryColor,
                     foregroundColor: Colors.white,

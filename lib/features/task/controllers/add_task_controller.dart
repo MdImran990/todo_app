@@ -4,89 +4,62 @@ import 'package:get/get.dart';
 import 'task_controller.dart';
 
 class AddTaskController extends GetxController {
-  // TEXT CONTROLLERS
-
-  final TextEditingController titleController =
-  TextEditingController();
-
-  final TextEditingController descriptionController =
-  TextEditingController();
-
-  // PRIORITY
-
+  final titleController = TextEditingController();
+  final descriptionController = TextEditingController();
 
   final RxString selectedPriority = 'Medium'.obs;
-
-  // CHANGE PRIORITY
 
   void changePriority(String priority) {
     selectedPriority.value = priority;
   }
 
-  // ADD TASK
-
-  void addTask() {
+  void createTask() {
     final title = titleController.text.trim();
-
-    final description =
-    descriptionController.text.trim();
-
-    // VALIDATION
+    final description = descriptionController.text.trim();
 
     if (title.isEmpty) {
       Get.snackbar(
-        'Task Title Required',
+        'Task Required',
         'Please enter a task title.',
         snackPosition: SnackPosition.BOTTOM,
-        margin: const EdgeInsets.all(16),
       );
-
       return;
     }
 
-    // GET TASK CONTROLLER
+    final bool isRegistered = Get.isRegistered<TaskController>();
 
-    TaskController taskController;
-
-    if (Get.isRegistered<TaskController>()) {
-      taskController = Get.find<TaskController>();
-    } else {
-      taskController = Get.put(TaskController());
+    if (!isRegistered) {
+      Get.snackbar(
+        'Error',
+        'Something went wrong. Please try again.',
+        snackPosition: SnackPosition.BOTTOM,
+      );
+      return;
     }
-    // ADD TASK
 
+    final taskController = Get.find<TaskController>();
+
+    // ✅ updated method call
     taskController.addTask(
       title: title,
       description: description,
       priority: selectedPriority.value,
     );
-    // SUCCESS MESSAGE
 
     Get.snackbar(
-      'Task Added Successfully',
-      '$title has been added to your tasks.',
+      'Success',
+      'Task created successfully.',
       snackPosition: SnackPosition.BOTTOM,
-      margin: const EdgeInsets.all(16),
       duration: const Duration(seconds: 2),
     );
-    // CLEAR FIELDS
-
-    titleController.clear();
-    descriptionController.clear();
-
-    selectedPriority.value = 'Medium';
-    // BACK TO TASK SCREEN
 
     Get.back();
   }
-
-  // DISPOSE
 
   @override
   void onClose() {
     titleController.dispose();
     descriptionController.dispose();
-
     super.onClose();
   }
 }

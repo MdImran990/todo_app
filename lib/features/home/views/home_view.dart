@@ -1,12 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-
 import '../../../app/routes/app_routes.dart';
 import '../controllers/home_controller.dart';
-
 class HomeView extends GetView<HomeController> {
   const HomeView({super.key});
-
   static const Color primaryColor = Color(0xFF5B5FEF);
   static const Color secondaryColor = Color(0xFF7B61FF);
   static const Color backgroundColor = Color(0xFFF7F8FC);
@@ -89,15 +86,14 @@ class HomeView extends GetView<HomeController> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-
-              const Text(
-                'Good Morning 👋',
-                style: TextStyle(
+              Obx(() => Text(
+                'Good Morning, ${controller.firstName.value.isNotEmpty ? controller.firstName.value : 'there'} 👋',
+                style: const TextStyle(
                   color: mutedColor,
                   fontSize: 14,
                   fontWeight: FontWeight.w500,
                 ),
-              ),
+              )),
 
               const SizedBox(height: 6),
 
@@ -130,7 +126,7 @@ class HomeView extends GetView<HomeController> {
                   ),
                   TextButton(
                     onPressed: () {
-                      Get.offNamed(AppRoutes.tasks); // ✅ fix
+                      Get.offNamed(AppRoutes.tasks);
                     },
                     child: const Text(
                       'View All',
@@ -442,7 +438,6 @@ class HomeView extends GetView<HomeController> {
       ),
     );
   }
-
   Widget _buildOverviewCard({
     required IconData icon,
     required String title,

@@ -1,302 +1,138 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-
 import 'task_controller.dart';
 
 class TaskDetailsController extends GetxController {
-  late TaskController taskController;
+  final TaskController _taskController = Get.find<TaskController>();
 
-  String taskId = '';
+  final RxMap<String, dynamic> task = <String, dynamic>{}.obs;
 
-  // =====================================================
-  // EDIT CONTROLLERS
-  // =====================================================
-
-  final TextEditingController titleController =
-  TextEditingController();
-
-  final TextEditingController descriptionController =
-  TextEditingController();
-
+  final TextEditingController titleController = TextEditingController();
+  final TextEditingController descriptionController = TextEditingController();
   final RxString selectedPriority = 'Medium'.obs;
-
-  // =====================================================
-  // INIT
-  // =====================================================
+  final RxString selectedStatus = 'New'.obs;
+  final RxBool isLoading = false.obs;
 
   @override
   void onInit() {
     super.onInit();
-
-    if (Get.isRegistered<TaskController>()) {
-      taskController = Get.find<TaskController>();
-    } else {
-      taskController = Get.put(TaskController());
+    final String? id = Get.arguments as String?;
+    if (id != null) {
+      loadTask(id);
     }
+  }
 
-    final dynamic argument = Get.arguments;
-
-    if (argument is String) {
-      taskId = argument;
-    } else if (argument is Map) {
-      taskId = argument['id']?.toString() ?? '';
+  void loadTask(String id) {
+    final data = _taskController.getTaskById(id);
+    if (data != null) {
+      task.value = data;
+      titleController.text = data['title'] ?? '';
+      descriptionController.text = data['description'] ?? '';
+      selectedPriority.value = data['priority'] ?? 'Medium';
+      selectedStatus.value = data['status'] ?? 'New';
     }
-
-    _loadTaskData();
   }
-
-  // =====================================================
-  // CURRENT TASK
-  // =====================================================
-
-  Map<String, dynamic>? get task {
-    if (taskId.isEmpty) {
-      return null;
-    }
-
-    return taskController.getTaskById(taskId);
-  }
-
-  // =====================================================
-  // LOAD DATA
-  // =====================================================
-
-  void _loadTaskData() {
-    final currentTask = task;
-
-    if (currentTask == null) {
-      return;
-    }
-
-    titleController.text =
-        currentTask['title']?.toString() ?? '';
-
-    descriptionController.text =
-        currentTask['description']?.toString() ?? '';
-
-    selectedPriority.value =
-        currentTask['priority']?.toString() ?? 'Medium';
-  }
-
-  // =====================================================
-  // TITLE
-  // =====================================================
-
-  String get title {
-    return task?['title']?.toString() ?? '';
-  }
-
-  // =====================================================
-  // DESCRIPTION
-  // =====================================================
-
-  String get description {
-    return task?['description']?.toString() ?? '';
-  }
-
-  // =====================================================
-  // SUBTITLE
-  // =====================================================
-
-  String get subtitle {
-    final currentTask = task;
-
-    if (currentTask == null) {
-      return '';
-    }
-
-    final String desc =
-        currentTask['description']?.toString() ?? '';
-
-    if (desc.isNotEmpty) {
-      return desc;
-    }
-
-    return currentTask['subtitle']?.toString() ?? '';
-  }
-
-  // =====================================================
-  // PRIORITY
-  // =====================================================
-
-  String get priority {
-    return task?['priority']?.toString() ?? 'Medium';
-  }
-
-  // =====================================================
-  // STATUS
-  // =====================================================
-
-  String get status {
-    return task?['status']?.toString() ?? 'New';
-  }
-
-  // =====================================================
-  // CHANGE PRIORITY
-  // =====================================================
 
   void changePriority(String priority) {
     selectedPriority.value = priority;
   }
 
-  // =====================================================
-  // UPDATE STATUS
-  // =====================================================
-
-  void updateStatus(String newStatus) {
-    if (taskId.isEmpty) {
-      return;
-    }
-
-    final bool success =
-    taskController.updateTaskStatus(
-      id: taskId,
-      newStatus: newStatus,
-    );
-
-    if (!success) {
-      Get.snackbar(
-        'Error',
-        'Task status could not be updated.',
-        snackPosition: SnackPosition.BOTTOM,
-        margin: const EdgeInsets.all(16),
-      );
-      return;
-    }
-
-    update();
-
-    Get.snackbar(
-      'Status Updated',
-      'Task status changed to $newStatus.',
-      snackPosition: SnackPosition.BOTTOM,
-      margin: const EdgeInsets.all(16),
-      duration: const Duration(seconds: 2),
-    );
+  void changeStatus(String status) {
+    selectedStatus.value = status;
   }
 
-  // =====================================================
-  // SAVE EDIT
-  // =====================================================
+  void updateTask() {
+    final title = titleController.text.trim();
+    final description = descriptionController.text.trim();
 
-  bool saveTask() {
-    final String newTitle =
-    titleController.text.trim();
-
-    final String newDescription =
-    descriptionController.text.trim();
-
-    if (newTitle.isEmpty) {
+    if (title.isEmpty) {
       Get.snackbar(
         'Title Required',
         'Please enter a task title.',
         snackPosition: SnackPosition.BOTTOM,
-        margin: const EdgeInsets.all(16),
       );
-
-      return false;
+      return;
     }
 
-    final bool success =
-    taskController.updateTask(
-      id: taskId,
-      title: newTitle,
-      description: newDescription,
+    final String id = task['id']?.toString() ?? '';
+
+    final bool updated = _taskController.updateTask(
+      id: id,
+      title: title,
+      description: description,
       priority: selectedPriority.value,
     );
 
-    if (!success) {
-      Get.snackbar(
-        'Update Failed',
-        'Task could not be updated.',
-        snackPosition: SnackPosition.BOTTOM,
-        margin: const EdgeInsets.all(16),
-      );
-
-      return false;
-    }
-
-    update();
-
-    Get.snackbar(
-      'Task Updated',
-      'Your task has been updated successfully.',
-      snackPosition: SnackPosition.BOTTOM,
-      margin: const EdgeInsets.all(16),
-      duration: const Duration(seconds: 2),
+    _taskController.updateTaskStatus(
+      id: id,
+      newStatus: selectedStatus.value,
     );
 
-    return true;
+    if (updated) {
+      Get.snackbar(
+        'Success',
+        'Task updated successfully.',
+        snackPosition: SnackPosition.BOTTOM,
+        duration: const Duration(seconds: 2),
+      );
+      Get.back();
+    } else {
+      Get.snackbar(
+        'Error',
+        'Failed to update task.',
+        snackPosition: SnackPosition.BOTTOM,
+      );
+    }
   }
-
-  // =====================================================
-  // DELETE
-  // =====================================================
 
   void deleteTask() {
-    if (taskId.isEmpty) {
-      return;
-    }
+    final String id = task['id']?.toString() ?? '';
 
-    final bool success =
-    taskController.deleteTask(taskId);
-
-    if (!success) {
-      Get.snackbar(
-        'Delete Failed',
-        'Task could not be deleted.',
-        snackPosition: SnackPosition.BOTTOM,
-        margin: const EdgeInsets.all(16),
-      );
-
-      return;
-    }
-
-    Get.back();
-
-    Get.snackbar(
-      'Task Deleted',
-      'The task has been deleted successfully.',
-      snackPosition: SnackPosition.BOTTOM,
-      margin: const EdgeInsets.all(16),
-      duration: const Duration(seconds: 2),
-    );
-  }
-
-  // =====================================================
-  // CONFIRM DELETE
-  // =====================================================
-
-  void confirmDelete() {
     Get.dialog(
       AlertDialog(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(20),
+        ),
         title: const Text(
-          'Delete Task?',
+          'Delete Task',
           style: TextStyle(
+            color: Color(0xFF171725),
             fontWeight: FontWeight.w800,
           ),
         ),
         content: const Text(
           'Are you sure you want to delete this task?',
-        ),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(20),
+          style: TextStyle(color: Color(0xFF8C8C9A)),
         ),
         actions: [
           TextButton(
-            onPressed: () {
-              Get.back();
-            },
-            child: const Text('Cancel'),
+            onPressed: () => Get.back(),
+            child: const Text(
+              'Cancel',
+              style: TextStyle(color: Color(0xFF8C8C9A)),
+            ),
           ),
           ElevatedButton(
             onPressed: () {
               Get.back();
-              deleteTask();
+              final bool deleted = _taskController.deleteTask(id);
+              if (deleted) {
+                Get.snackbar(
+                  'Deleted',
+                  'Task deleted successfully.',
+                  snackPosition: SnackPosition.BOTTOM,
+                  duration: const Duration(seconds: 2),
+                );
+                Get.back();
+              }
             },
             style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.redAccent,
+              backgroundColor: Colors.red,
               foregroundColor: Colors.white,
+              elevation: 0,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
             ),
             child: const Text('Delete'),
           ),
@@ -305,15 +141,10 @@ class TaskDetailsController extends GetxController {
     );
   }
 
-  // =====================================================
-  // DISPOSE
-  // =====================================================
-
   @override
   void onClose() {
     titleController.dispose();
     descriptionController.dispose();
-
     super.onClose();
   }
 }
