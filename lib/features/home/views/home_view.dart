@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../app/routes/app_routes.dart';
 import '../controllers/home_controller.dart';
+import '../controllers/time_controller.dart';
 class HomeView extends GetView<HomeController> {
   const HomeView({super.key});
   static const Color primaryColor = Color(0xFF5B5FEF);
@@ -9,17 +10,14 @@ class HomeView extends GetView<HomeController> {
   static const Color backgroundColor = Color(0xFFF7F8FC);
   static const Color textColor = Color(0xFF171725);
   static const Color mutedColor = Color(0xFF8C8C9A);
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: backgroundColor,
-
       appBar: AppBar(
         backgroundColor: backgroundColor,
         elevation: 0,
         scrolledUnderElevation: 0,
-
         title: Row(
           children: [
             Container(
