@@ -1,11 +1,38 @@
 import 'package:get/get.dart';
 
 class TaskController extends GetxController {
+
   // =====================================================
   // FILTER
   // =====================================================
 
   final RxInt selectedFilter = 0.obs;
+
+  // =====================================================
+  // SEARCH
+  // =====================================================
+
+  final RxString searchQuery = ''.obs;
+  final RxBool isSearching = false.obs;
+
+  void toggleSearch() {
+    isSearching.value = !isSearching.value;
+    if (!isSearching.value) {
+      searchQuery.value = '';
+    }
+  }
+
+  void onSearchChanged(String query) {
+    searchQuery.value = query.trim().toLowerCase();
+  }
+
+  void searchTask(String value) {
+    searchQuery.value = value.trim().toLowerCase();
+  }
+
+  void clearSearch() {
+    searchQuery.value = '';
+  }
 
   // =====================================================
   // TASK LIST
@@ -48,30 +75,58 @@ class TaskController extends GetxController {
   }
 
   // =====================================================
-  // FILTERED TASKS
+  // FILTERED + SEARCHED TASKS
   // =====================================================
 
   List<Map<String, dynamic>> get filteredTasks {
-    if (selectedFilter.value == 0) {
-      return tasks.toList();
+    List<Map<String, dynamic>> result = tasks.toList();
+
+    // STATUS FILTER
+    if (selectedFilter.value != 0) {
+      const statusList = ['New', 'Progress', 'Completed'];
+      final selectedStatus = statusList[selectedFilter.value - 1];
+      result = result
+          .where((task) => task['status']?.toString() == selectedStatus)
+          .toList();
     }
 
-    const statusList = [
-      'New',
-      'Progress',
-      'Completed',
-    ];
-
-    final selectedStatus =
-    statusList[selectedFilter.value - 1];
-
-    return tasks
-        .where(
-          (task) =>
-      task['status']?.toString() == selectedStatus,
-    )
-        .toList();
+    return result;
   }
+
+  // =====================================================
+  // SEARCHED TASKS
+  // =====================================================
+
+  List<Map<String, dynamic>> get searchedTasks {
+    if (searchQuery.value.isEmpty) {
+      return filteredTasks;
+    }
+
+    return filteredTasks.where((task) {
+      final title = task['title']?.toString().toLowerCase() ?? '';
+      final description = task['description']?.toString().toLowerCase() ?? '';
+      return title.contains(searchQuery.value) ||
+          description.contains(searchQuery.value);
+    }).toList();
+  }
+
+  // =====================================================
+  // STATISTICS
+  // =====================================================
+
+  int get totalTasks => tasks.length;
+
+  int get newTasks =>
+      tasks.where((t) => t['status'] == 'New').length;
+
+  int get progressTasks =>
+      tasks.where((t) => t['status'] == 'Progress').length;
+
+  int get completedTasks =>
+      tasks.where((t) => t['status'] == 'Completed').length;
+
+  double get completionRate =>
+      totalTasks == 0 ? 0 : completedTasks / totalTasks;
 
   // =====================================================
   // GET TASK BY ID
@@ -79,9 +134,7 @@ class TaskController extends GetxController {
 
   Map<String, dynamic>? getTaskById(String id) {
     try {
-      return tasks.firstWhere(
-            (task) => task['id']?.toString() == id,
-      );
+      return tasks.firstWhere((task) => task['id']?.toString() == id);
     } catch (_) {
       return null;
     }
@@ -96,11 +149,8 @@ class TaskController extends GetxController {
     required String description,
     required String priority,
   }) {
-    final String id =
-    DateTime.now().microsecondsSinceEpoch.toString();
-
-    final String subtitle =
-        'Today • $priority Priority';
+    final String id = DateTime.now().microsecondsSinceEpoch.toString();
+    final String subtitle = 'Today • $priority Priority';
 
     tasks.add({
       'id': id,
@@ -124,13 +174,9 @@ class TaskController extends GetxController {
     required String description,
     required String priority,
   }) {
-    final int index = tasks.indexWhere(
-          (task) => task['id']?.toString() == id,
-    );
+    final int index = tasks.indexWhere((task) => task['id']?.toString() == id);
 
-    if (index == -1) {
-      return false;
-    }
+    if (index == -1) return false;
 
     tasks[index] = {
       ...tasks[index],
@@ -141,7 +187,6 @@ class TaskController extends GetxController {
     };
 
     tasks.refresh();
-
     return true;
   }
 
@@ -153,13 +198,9 @@ class TaskController extends GetxController {
     required String id,
     required String newStatus,
   }) {
-    final int index = tasks.indexWhere(
-          (task) => task['id']?.toString() == id,
-    );
+    final int index = tasks.indexWhere((task) => task['id']?.toString() == id);
 
-    if (index == -1) {
-      return false;
-    }
+    if (index == -1) return false;
 
     tasks[index] = {
       ...tasks[index],
@@ -167,7 +208,6 @@ class TaskController extends GetxController {
     };
 
     tasks.refresh();
-
     return true;
   }
 
@@ -177,13 +217,8 @@ class TaskController extends GetxController {
 
   bool deleteTask(String id) {
     final int oldLength = tasks.length;
-
-    tasks.removeWhere(
-          (task) => task['id']?.toString() == id,
-    );
-
+    tasks.removeWhere((task) => task['id']?.toString() == id);
     tasks.refresh();
-
     return tasks.length < oldLength;
   }
 }

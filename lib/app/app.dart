@@ -1,28 +1,24 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
+import '../core/services/theme_service.dart';
 import 'routes/app_pages.dart';
 import 'routes/app_routes.dart';
 import 'theme/app_theme.dart';
 
-class TaskFlowApp extends StatelessWidget {
-  const TaskFlowApp({super.key});
+class App extends StatelessWidget {
+  const App({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return GetMaterialApp(
-      debugShowCheckedModeBanner: false,
-      // App Information
+    return Obx(() => GetMaterialApp(
       title: 'TaskFlow',
-
-      // Global Theme
+      debugShowCheckedModeBanner: false,
       theme: AppTheme.lightTheme,
-
-      // Initial Route
+      darkTheme: AppTheme.darkTheme,
+      themeMode: ThemeService.to.themeMode,
       initialRoute: AppRoutes.splash,
-
-      // GetX Routes
       getPages: AppPages.routes,
-    );
+    ));
   }
 }

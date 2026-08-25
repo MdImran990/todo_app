@@ -1,8 +1,9 @@
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-
 import '../controllers/profile_controller.dart';
+import '../../../core/services/theme_service.dart';
+import '../../task/views/task_statistics_view.dart';
 
 class ProfileView extends GetView<ProfileController> {
   const ProfileView({super.key});
@@ -290,7 +291,33 @@ class ProfileView extends GetView<ProfileController> {
                         activeThumbColor: primaryColor,
                       ),
                     )),
+                    // Notification tile এর পরে যোগ করুন
+                    _buildDivider(),
 
+// ✅ Dark Mode
+                    Obx(() => _buildSettingsTile(
+                      icon: Icons.dark_mode_outlined,
+                      title: 'Dark Mode',
+                      trailing: Switch(
+                        value: ThemeService.to.isDarkMode.value,
+                        onChanged: (_) => ThemeService.to.toggleTheme(),
+                        activeThumbColor: primaryColor,
+                      ),
+                    )),
+
+                    _buildDivider(),
+
+// ✅ Task Statistics
+                    _buildSettingsTile(
+                      icon: Icons.bar_chart_rounded,
+                      title: 'Task Statistics',
+                      trailing: const Icon(
+                        Icons.arrow_forward_ios_rounded,
+                        size: 14,
+                        color: Color(0xFF8C8C9A),
+                      ),
+                      onTap: () => Get.to(() => const TaskStatisticsView()),
+                    ),
                     _buildDivider(),
 
                     _buildSettingsTile(

@@ -42,8 +42,11 @@ dependencies:
   # Cached Images
   cached_network_image: ^3.4.1
 
-  # Image Picker ✅ নতুন
+  # Image Picker
   image_picker: ^1.1.2
+
+  # Local Notifications
+  flutter_local_notifications: ^18.0.1
 
 dev_dependencies:
   flutter_test:

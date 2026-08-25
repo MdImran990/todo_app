@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 import 'task_controller.dart';
+import '../../../core/services/notification_service.dart';
 
 class AddTaskController extends GetxController {
   final titleController = TextEditingController();
@@ -13,7 +14,7 @@ class AddTaskController extends GetxController {
     selectedPriority.value = priority;
   }
 
-  void createTask() {
+  Future<void> createTask() async {
     final title = titleController.text.trim();
     final description = descriptionController.text.trim();
 
@@ -39,11 +40,18 @@ class AddTaskController extends GetxController {
 
     final taskController = Get.find<TaskController>();
 
-    // ✅ updated method call
+    // Create Task
     taskController.addTask(
       title: title,
       description: description,
       priority: selectedPriority.value,
+    );
+
+    // Notification
+    await NotificationService.showNotification(
+      id: DateTime.now().millisecondsSinceEpoch ~/ 1000,
+      title: '📋 New Task Created',
+      body: 'Task "$title" has been added successfully!',
     );
 
     Get.snackbar(
