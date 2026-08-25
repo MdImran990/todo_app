@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 
 import '../core/services/theme_service.dart';
@@ -11,14 +12,36 @@ class App extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Obx(() => GetMaterialApp(
-      title: 'TaskFlow',
-      debugShowCheckedModeBanner: false,
-      theme: AppTheme.lightTheme,
-      darkTheme: AppTheme.darkTheme,
-      themeMode: ThemeService.to.themeMode,
-      initialRoute: AppRoutes.splash,
-      getPages: AppPages.routes,
-    ));
+    return Obx(() {
+      final bool isDark =
+          ThemeService.to.themeMode == ThemeMode.dark;
+
+      return AnnotatedRegion<SystemUiOverlayStyle>(
+        value: SystemUiOverlayStyle(
+          statusBarColor: Colors.transparent,
+          statusBarIconBrightness:
+          isDark ? Brightness.light : Brightness.dark,
+          statusBarBrightness:
+          isDark ? Brightness.dark : Brightness.light,
+          systemNavigationBarColor:
+          isDark
+              ? AppTheme.darkTheme.scaffoldBackgroundColor
+              : AppTheme.lightTheme.scaffoldBackgroundColor,
+          systemNavigationBarIconBrightness:
+          isDark ? Brightness.light : Brightness.dark,
+        ),
+        child: GetMaterialApp(
+          title: 'TaskFlow',
+          debugShowCheckedModeBanner: false,
+
+          theme: AppTheme.lightTheme,
+          darkTheme: AppTheme.darkTheme,
+          themeMode: ThemeService.to.themeMode,
+
+          initialRoute: AppRoutes.splash,
+          getPages: AppPages.routes,
+        ),
+      );
+    });
   }
 }

@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../controllers/profile_controller.dart';
@@ -9,21 +8,28 @@ class ProfileView extends GetView<ProfileController> {
   const ProfileView({super.key});
 
   static const Color primaryColor = Color(0xFF5B5FEF);
-  static const Color secondaryColor = Color(0xFF7B61FF);
-  static const Color backgroundColor = Color(0xFFF7F8FC);
-  static const Color textColor = Color(0xFF171725);
-  static const Color mutedColor = Color(0xFF8C8C9A);
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
+    final bgColor = Theme.of(context).scaffoldBackgroundColor;
+    final cardColor = isDark ? const Color(0xFF1E1E1E) : Colors.white;
+    final textColor = isDark ? Colors.white : const Color(0xFF171725);
+    final mutedColor = isDark ? const Color(0xFFB0B0B0) : const Color(0xFF8C8C9A);
+    final iconBgColor = isDark ? const Color(0xFF2C2C3E) : const Color(0xFFEDEEFF);
+    final dividerColor = isDark ? const Color(0xFF2C2C2C) : const Color(0xFFE9E9F2);
+
     return Scaffold(
-      backgroundColor: backgroundColor,
+      backgroundColor: bgColor,
 
       appBar: AppBar(
-        backgroundColor: backgroundColor,
+        backgroundColor: bgColor,
         elevation: 0,
         scrolledUnderElevation: 0,
-        title: const Text(
+        automaticallyImplyLeading: false,
+        title: Text(
           'Profile',
           style: TextStyle(
             color: textColor,
@@ -33,37 +39,10 @@ class ProfileView extends GetView<ProfileController> {
         ),
       ),
 
-      bottomNavigationBar: NavigationBar(
-        backgroundColor: Colors.white,
-        elevation: 8,
-        selectedIndex: 2,
-        onDestinationSelected: (index) {
-          if (index == 0) Get.offNamed('/home');
-          if (index == 1) Get.offNamed('/tasks');
-        },
-        destinations: const [
-          NavigationDestination(
-            icon: Icon(Icons.home_outlined),
-            selectedIcon: Icon(Icons.home_rounded),
-            label: 'Home',
-          ),
-          NavigationDestination(
-            icon: Icon(Icons.task_outlined),
-            selectedIcon: Icon(Icons.task_rounded),
-            label: 'Tasks',
-          ),
-          NavigationDestination(
-            icon: Icon(Icons.person_outline_rounded),
-            selectedIcon: Icon(Icons.person_rounded),
-            label: 'Profile',
-          ),
-        ],
-      ),
-
       body: Obx(() {
         if (controller.isLoading.value) {
-          return const Center(
-            child: CircularProgressIndicator(color: primaryColor),
+          return Center(
+            child: CircularProgressIndicator(color: colorScheme.primary),
           );
         }
 
@@ -73,10 +52,7 @@ class ProfileView extends GetView<ProfileController> {
           child: Column(
             children: [
 
-              // =================================================
-              // PROFILE HEADER
-              // =================================================
-
+              // ── PROFILE HEADER ────────────────────────────
               Container(
                 width: double.infinity,
                 padding: const EdgeInsets.all(24),
@@ -84,12 +60,12 @@ class ProfileView extends GetView<ProfileController> {
                   gradient: const LinearGradient(
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,
-                    colors: [primaryColor, secondaryColor],
+                    colors: [Color(0xFF5B5FEF), Color(0xFF7B61FF)],
                   ),
                   borderRadius: BorderRadius.circular(26),
                   boxShadow: [
                     BoxShadow(
-                      color: primaryColor.withValues(alpha: 0.28),
+                      color: const Color(0xFF5B5FEF).withValues(alpha: 0.28),
                       blurRadius: 24,
                       offset: const Offset(0, 12),
                     ),
@@ -97,8 +73,6 @@ class ProfileView extends GetView<ProfileController> {
                 ),
                 child: Column(
                   children: [
-
-                    // ✅ PROFILE PHOTO
                     GestureDetector(
                       onTap: controller.showImagePickerDialog,
                       child: Stack(
@@ -122,8 +96,7 @@ class ProfileView extends GetView<ProfileController> {
                                 : Center(
                               child: Text(
                                 controller.firstName.value.isNotEmpty
-                                    ? controller.firstName.value[0]
-                                    .toUpperCase()
+                                    ? controller.firstName.value[0].toUpperCase()
                                     : 'U',
                                 style: const TextStyle(
                                   color: Colors.white,
@@ -134,7 +107,6 @@ class ProfileView extends GetView<ProfileController> {
                             ),
                           )),
 
-                          // CAMERA ICON
                           Positioned(
                             bottom: 0,
                             right: 0,
@@ -196,11 +168,8 @@ class ProfileView extends GetView<ProfileController> {
 
               const SizedBox(height: 24),
 
-              // =================================================
-              // TASK STATISTICS
-              // =================================================
-
-              const Align(
+              // ── TASK STATISTICS ───────────────────────────
+              Align(
                 alignment: Alignment.centerLeft,
                 child: Text(
                   'Task Statistics',
@@ -221,8 +190,12 @@ class ProfileView extends GetView<ProfileController> {
                       label: 'Total',
                       value: '12',
                       icon: Icons.task_alt_rounded,
-                      color: primaryColor,
-                      bg: const Color(0xFFEDEEFF),
+                      color: colorScheme.primary,
+                      bg: iconBgColor,
+                      cardColor: cardColor,
+                      textColor: textColor,
+                      mutedColor: mutedColor,
+                      isDark: isDark,
                     ),
                   ),
                   const SizedBox(width: 12),
@@ -232,7 +205,11 @@ class ProfileView extends GetView<ProfileController> {
                       value: '7',
                       icon: Icons.check_circle_outline_rounded,
                       color: const Color(0xFF1D9E75),
-                      bg: const Color(0xFFE1F5EE),
+                      bg: isDark ? const Color(0xFF1A2E27) : const Color(0xFFE1F5EE),
+                      cardColor: cardColor,
+                      textColor: textColor,
+                      mutedColor: mutedColor,
+                      isDark: isDark,
                     ),
                   ),
                   const SizedBox(width: 12),
@@ -242,7 +219,11 @@ class ProfileView extends GetView<ProfileController> {
                       value: '5',
                       icon: Icons.pending_actions_rounded,
                       color: const Color(0xFFEF9F27),
-                      bg: const Color(0xFFFAEEDA),
+                      bg: isDark ? const Color(0xFF2E2516) : const Color(0xFFFAEEDA),
+                      cardColor: cardColor,
+                      textColor: textColor,
+                      mutedColor: mutedColor,
+                      isDark: isDark,
                     ),
                   ),
                 ],
@@ -250,11 +231,8 @@ class ProfileView extends GetView<ProfileController> {
 
               const SizedBox(height: 24),
 
-              // =================================================
-              // SETTINGS
-              // =================================================
-
-              const Align(
+              // ── SETTINGS ──────────────────────────────────
+              Align(
                 alignment: Alignment.centerLeft,
                 child: Text(
                   'Settings',
@@ -270,11 +248,11 @@ class ProfileView extends GetView<ProfileController> {
 
               Container(
                 decoration: BoxDecoration(
-                  color: Colors.white,
+                  color: cardColor,
                   borderRadius: BorderRadius.circular(20),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black.withValues(alpha: 0.04),
+                      color: Colors.black.withValues(alpha: isDark ? 0.2 : 0.04),
                       blurRadius: 15,
                       offset: const Offset(0, 6),
                     ),
@@ -285,45 +263,52 @@ class ProfileView extends GetView<ProfileController> {
                     Obx(() => _buildSettingsTile(
                       icon: Icons.notifications_none_rounded,
                       title: 'Notifications',
+                      textColor: textColor,
+                      iconBgColor: iconBgColor,
                       trailing: Switch(
                         value: controller.notificationsEnabled.value,
                         onChanged: controller.toggleNotifications,
-                        activeThumbColor: primaryColor,
+                        activeColor: colorScheme.primary,
                       ),
                     )),
-                    // Notification tile এর পরে যোগ করুন
-                    _buildDivider(),
 
-// ✅ Dark Mode
+                    Divider(height: 1, indent: 16, endIndent: 16, color: dividerColor),
+
                     Obx(() => _buildSettingsTile(
                       icon: Icons.dark_mode_outlined,
                       title: 'Dark Mode',
+                      textColor: textColor,
+                      iconBgColor: iconBgColor,
                       trailing: Switch(
                         value: ThemeService.to.isDarkMode.value,
                         onChanged: (_) => ThemeService.to.toggleTheme(),
-                        activeThumbColor: primaryColor,
+                        activeColor: colorScheme.primary,
                       ),
                     )),
 
-                    _buildDivider(),
+                    Divider(height: 1, indent: 16, endIndent: 16, color: dividerColor),
 
-// ✅ Task Statistics
                     _buildSettingsTile(
                       icon: Icons.bar_chart_rounded,
                       title: 'Task Statistics',
-                      trailing: const Icon(
+                      textColor: textColor,
+                      iconBgColor: iconBgColor,
+                      trailing: Icon(
                         Icons.arrow_forward_ios_rounded,
                         size: 14,
-                        color: Color(0xFF8C8C9A),
+                        color: mutedColor,
                       ),
                       onTap: () => Get.to(() => const TaskStatisticsView()),
                     ),
-                    _buildDivider(),
+
+                    Divider(height: 1, indent: 16, endIndent: 16, color: dividerColor),
 
                     _buildSettingsTile(
                       icon: Icons.lock_outline_rounded,
                       title: 'Change Password',
-                      trailing: const Icon(
+                      textColor: textColor,
+                      iconBgColor: iconBgColor,
+                      trailing: Icon(
                         Icons.arrow_forward_ios_rounded,
                         size: 14,
                         color: mutedColor,
@@ -331,12 +316,14 @@ class ProfileView extends GetView<ProfileController> {
                       onTap: () {},
                     ),
 
-                    _buildDivider(),
+                    Divider(height: 1, indent: 16, endIndent: 16, color: dividerColor),
 
                     _buildSettingsTile(
                       icon: Icons.info_outline_rounded,
                       title: 'About App',
-                      trailing: const Icon(
+                      textColor: textColor,
+                      iconBgColor: iconBgColor,
+                      trailing: Icon(
                         Icons.arrow_forward_ios_rounded,
                         size: 14,
                         color: mutedColor,
@@ -349,10 +336,7 @@ class ProfileView extends GetView<ProfileController> {
 
               const SizedBox(height: 24),
 
-              // =================================================
-              // LOGOUT
-              // =================================================
-
+              // ── LOGOUT ────────────────────────────────────
               SizedBox(
                 width: double.infinity,
                 height: 56,
@@ -360,24 +344,25 @@ class ProfileView extends GetView<ProfileController> {
                   onPressed: () {
                     Get.dialog(
                       AlertDialog(
+                        backgroundColor: cardColor,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(20),
                         ),
-                        title: const Text(
+                        title: Text(
                           'Logout',
                           style: TextStyle(
                             color: textColor,
                             fontWeight: FontWeight.w800,
                           ),
                         ),
-                        content: const Text(
+                        content: Text(
                           'Are you sure you want to logout?',
                           style: TextStyle(color: mutedColor),
                         ),
                         actions: [
                           TextButton(
                             onPressed: () => Get.back(),
-                            child: const Text(
+                            child: Text(
                               'Cancel',
                               style: TextStyle(color: mutedColor),
                             ),
@@ -402,7 +387,9 @@ class ProfileView extends GetView<ProfileController> {
                     );
                   },
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFFFFEEEE),
+                    backgroundColor: isDark
+                        ? Colors.red.withValues(alpha: 0.15)
+                        : const Color(0xFFFFEEEE),
                     foregroundColor: Colors.red,
                     elevation: 0,
                     shape: RoundedRectangleBorder(
@@ -432,15 +419,19 @@ class ProfileView extends GetView<ProfileController> {
     required IconData icon,
     required Color color,
     required Color bg,
+    required Color cardColor,
+    required Color textColor,
+    required Color mutedColor,
+    required bool isDark,
   }) {
     return Container(
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: cardColor,
         borderRadius: BorderRadius.circular(18),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.04),
+            color: Colors.black.withValues(alpha: isDark ? 0.2 : 0.04),
             blurRadius: 15,
             offset: const Offset(0, 6),
           ),
@@ -460,7 +451,7 @@ class ProfileView extends GetView<ProfileController> {
           const SizedBox(height: 10),
           Text(
             value,
-            style: const TextStyle(
+            style: TextStyle(
               color: textColor,
               fontSize: 22,
               fontWeight: FontWeight.w900,
@@ -469,7 +460,7 @@ class ProfileView extends GetView<ProfileController> {
           const SizedBox(height: 2),
           Text(
             label,
-            style: const TextStyle(
+            style: TextStyle(
               color: mutedColor,
               fontSize: 11,
               fontWeight: FontWeight.w500,
@@ -484,6 +475,8 @@ class ProfileView extends GetView<ProfileController> {
     required IconData icon,
     required String title,
     required Widget trailing,
+    required Color textColor,
+    required Color iconBgColor,
     VoidCallback? onTap,
   }) {
     return ListTile(
@@ -496,14 +489,14 @@ class ProfileView extends GetView<ProfileController> {
         width: 40,
         height: 40,
         decoration: BoxDecoration(
-          color: const Color(0xFFEDEEFF),
+          color: iconBgColor,
           borderRadius: BorderRadius.circular(12),
         ),
         child: Icon(icon, color: primaryColor, size: 20),
       ),
       title: Text(
         title,
-        style: const TextStyle(
+        style: TextStyle(
           color: textColor,
           fontSize: 14,
           fontWeight: FontWeight.w600,
@@ -511,9 +504,5 @@ class ProfileView extends GetView<ProfileController> {
       ),
       trailing: trailing,
     );
-  }
-
-  Widget _buildDivider() {
-    return const Divider(height: 1, indent: 16, endIndent: 16);
   }
 }

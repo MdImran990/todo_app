@@ -8,36 +8,40 @@ import '../widgets/task_card.dart';
 class TaskView extends GetView<TaskController> {
   const TaskView({super.key});
 
-  static const Color primaryColor = Color(0xFF5B5FEF);
-  static const Color backgroundColor = Color(0xFFF7F8FC);
-  static const Color textColor = Color(0xFF171725);
-  static const Color mutedColor = Color(0xFF8C8C9A);
-
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
+    final bgColor = Theme.of(context).scaffoldBackgroundColor;
+    final cardColor = isDark ? const Color(0xFF1E1E1E) : Colors.white;
+    final textColor = isDark ? Colors.white : const Color(0xFF171725);
+    final mutedColor = isDark ? const Color(0xFFB0B0B0) : const Color(0xFF8C8C9A);
+
     return Scaffold(
-      backgroundColor: backgroundColor,
+      backgroundColor: bgColor,
 
       appBar: AppBar(
-        backgroundColor: backgroundColor,
+        backgroundColor: bgColor,
         elevation: 0,
         scrolledUnderElevation: 0,
+        automaticallyImplyLeading: false,
         title: Obx(() => controller.isSearching.value
             ? TextField(
           autofocus: true,
           onChanged: controller.onSearchChanged,
           decoration: InputDecoration(
             hintText: 'Search tasks...',
-            hintStyle: const TextStyle(color: mutedColor),
+            hintStyle: TextStyle(color: mutedColor),
             border: InputBorder.none,
           ),
-          style: const TextStyle(
+          style: TextStyle(
             color: textColor,
             fontSize: 18,
             fontWeight: FontWeight.w600,
           ),
         )
-            : const Column(
+            : Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
@@ -48,7 +52,7 @@ class TaskView extends GetView<TaskController> {
                 fontWeight: FontWeight.w800,
               ),
             ),
-            SizedBox(height: 3),
+            const SizedBox(height: 3),
             Text(
               'Manage your tasks',
               style: TextStyle(
@@ -74,7 +78,7 @@ class TaskView extends GetView<TaskController> {
       ),
 
       floatingActionButton: FloatingActionButton(
-        backgroundColor: primaryColor,
+        backgroundColor: colorScheme.primary,
         elevation: 5,
         onPressed: () {
           Get.toNamed(AppRoutes.addTask)?.then((_) {
@@ -88,40 +92,13 @@ class TaskView extends GetView<TaskController> {
         ),
       ),
 
-      bottomNavigationBar: NavigationBar(
-        backgroundColor: Colors.white,
-        elevation: 8,
-        selectedIndex: 1,
-        onDestinationSelected: (index) {
-          if (index == 0) Get.offNamed(AppRoutes.home);
-          if (index == 2) Get.toNamed('/profile');
-        },
-        destinations: const [
-          NavigationDestination(
-            icon: Icon(Icons.home_outlined),
-            selectedIcon: Icon(Icons.home_rounded),
-            label: 'Home',
-          ),
-          NavigationDestination(
-            icon: Icon(Icons.task_outlined),
-            selectedIcon: Icon(Icons.task_rounded),
-            label: 'Tasks',
-          ),
-          NavigationDestination(
-            icon: Icon(Icons.person_outline_rounded),
-            selectedIcon: Icon(Icons.person_rounded),
-            label: 'Profile',
-          ),
-        ],
-      ),
-
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.fromLTRB(20, 10, 20, 20),
           child: Column(
             children: [
 
-              // FILTER
+              // ── FILTER ───────────────────────────────────
               SizedBox(
                 height: 44,
                 child: Obx(() {
@@ -146,11 +123,11 @@ class TaskView extends GetView<TaskController> {
                           margin: const EdgeInsets.only(right: 10),
                           padding: const EdgeInsets.symmetric(horizontal: 20),
                           decoration: BoxDecoration(
-                            color: isSelected ? primaryColor : Colors.white,
+                            color: isSelected ? colorScheme.primary : cardColor,
                             borderRadius: BorderRadius.circular(30),
                             boxShadow: [
                               BoxShadow(
-                                color: Colors.black.withValues(alpha: 0.04),
+                                color: Colors.black.withValues(alpha: isDark ? 0.2 : 0.04),
                                 blurRadius: 8,
                                 offset: const Offset(0, 3),
                               ),
@@ -175,14 +152,14 @@ class TaskView extends GetView<TaskController> {
 
               const SizedBox(height: 22),
 
-              // TASK LIST
+              // ── TASK LIST ─────────────────────────────────
               Expanded(
                 child: Obx(() {
                   final List<Map<String, dynamic>> tasks =
                       controller.searchedTasks;
 
                   if (tasks.isEmpty) {
-                    return _emptyState();
+                    return _emptyState(context);
                   }
 
                   return ListView.separated(
@@ -208,7 +185,13 @@ class TaskView extends GetView<TaskController> {
     );
   }
 
-  Widget _emptyState() {
+  Widget _emptyState(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final textColor = isDark ? Colors.white : const Color(0xFF171725);
+    final mutedColor = isDark ? const Color(0xFFB0B0B0) : const Color(0xFF8C8C9A);
+    final iconBgColor = isDark ? const Color(0xFF2C2C3E) : const Color(0xFFEDEEFF);
+
     return Center(
       child: SingleChildScrollView(
         child: Column(
@@ -217,18 +200,18 @@ class TaskView extends GetView<TaskController> {
             Container(
               width: 90,
               height: 90,
-              decoration: const BoxDecoration(
-                color: Color(0xFFEDEEFF),
+              decoration: BoxDecoration(
+                color: iconBgColor,
                 shape: BoxShape.circle,
               ),
-              child: const Icon(
+              child: Icon(
                 Icons.task_alt_rounded,
-                color: primaryColor,
+                color: colorScheme.primary,
                 size: 42,
               ),
             ),
             const SizedBox(height: 20),
-            const Text(
+            Text(
               'No Tasks Found',
               style: TextStyle(
                 color: textColor,
@@ -237,7 +220,7 @@ class TaskView extends GetView<TaskController> {
               ),
             ),
             const SizedBox(height: 8),
-            const Text(
+            Text(
               'You don\'t have any tasks here yet.',
               textAlign: TextAlign.center,
               style: TextStyle(color: mutedColor, fontSize: 13),
@@ -250,7 +233,7 @@ class TaskView extends GetView<TaskController> {
                 });
               },
               style: ElevatedButton.styleFrom(
-                backgroundColor: primaryColor,
+                backgroundColor: colorScheme.primary,
                 foregroundColor: Colors.white,
                 elevation: 0,
                 padding: const EdgeInsets.symmetric(
