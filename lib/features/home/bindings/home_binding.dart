@@ -15,9 +15,6 @@ class HomeBinding extends Bindings {
     Get.lazyPut<TimeController>(
           () => TimeController(),
     );
-
-    // ✅ IndexedStack এ TaskView আর ProfileView
-    // শুরুতেই load হয় তাই এখানে register করতে হবে
     Get.lazyPut<TaskController>(
           () => TaskController(),
     );

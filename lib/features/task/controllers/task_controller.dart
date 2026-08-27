@@ -1,6 +1,14 @@
 import 'package:get/get.dart';
+import 'package:get_storage/get_storage.dart';
+
+import '../../../core/services/auth_storage.dart';
 
 class TaskController extends GetxController {
+  // =====================================================
+  // STORAGE
+  // =====================================================
+
+  final GetStorage _storage = GetStorage();
 
   // =====================================================
   // FILTER
@@ -15,56 +23,92 @@ class TaskController extends GetxController {
   final RxString searchQuery = ''.obs;
   final RxBool isSearching = false.obs;
 
-  void toggleSearch() {
-    isSearching.value = !isSearching.value;
-    if (!isSearching.value) {
-      searchQuery.value = '';
-    }
-  }
-
-  void onSearchChanged(String query) {
-    searchQuery.value = query.trim().toLowerCase();
-  }
-
-  void searchTask(String value) {
-    searchQuery.value = value.trim().toLowerCase();
-  }
-
-  void clearSearch() {
-    searchQuery.value = '';
-  }
-
   // =====================================================
   // TASK LIST
   // =====================================================
 
   final RxList<Map<String, dynamic>> tasks =
-      <Map<String, dynamic>>[
-        {
-          'id': '1',
-          'title': 'Complete Flutter Project',
-          'subtitle': 'Today • High Priority',
-          'description': 'Complete the Flutter TaskFlow project.',
-          'status': 'New',
-          'priority': 'High',
-        },
-        {
-          'id': '2',
-          'title': 'Review API Integration',
-          'subtitle': 'Tomorrow • Medium Priority',
-          'description': 'Review and test REST API integration.',
-          'status': 'Progress',
-          'priority': 'Medium',
-        },
-        {
-          'id': '3',
-          'title': 'Update Profile',
-          'subtitle': 'Friday • Low Priority',
-          'description': 'Update profile information.',
-          'status': 'Completed',
-          'priority': 'Low',
-        },
-      ].obs;
+      <Map<String, dynamic>>[].obs;
+
+  // =====================================================
+  // INIT
+  // =====================================================
+
+  @override
+  void onInit() {
+    super.onInit();
+
+    loadTasks();
+  }
+
+  // =====================================================
+  // STORAGE KEY
+  // =====================================================
+
+  Future<String> _getStorageKey() async {
+    final String email =
+    await AuthStorage.getCurrentEmail();
+
+    if (email.isEmpty) {
+      return 'tasks_guest';
+    }
+
+    final String safeEmail = email
+        .trim()
+        .toLowerCase()
+        .replaceAll(RegExp(r'[^a-z0-9]'), '_');
+
+    return 'tasks_$safeEmail';
+  }
+
+  // =====================================================
+  // LOAD TASKS
+  // =====================================================
+
+  Future<void> loadTasks() async {
+    final String storageKey =
+    await _getStorageKey();
+
+    final dynamic storedTasks =
+    _storage.read(storageKey);
+
+    tasks.clear();
+
+    if (storedTasks != null &&
+        storedTasks is List) {
+      for (final task in storedTasks) {
+        if (task is Map) {
+          tasks.add(
+            Map<String, dynamic>.from(task),
+          );
+        }
+      }
+    }
+
+    tasks.refresh();
+  }
+
+  // =====================================================
+  // SAVE TASKS
+  // =====================================================
+
+  Future<void> _saveTasks() async {
+    final String storageKey =
+    await _getStorageKey();
+
+    final List<Map<String, dynamic>> taskList =
+    tasks
+        .map(
+          (task) =>
+      Map<String, dynamic>.from(task),
+    )
+        .toList();
+
+    await _storage.write(
+      storageKey,
+      taskList,
+    );
+  }
 
   // =====================================================
   // CHANGE FILTER
@@ -75,19 +119,54 @@ class TaskController extends GetxController {
   }
 
   // =====================================================
-  // FILTERED + SEARCHED TASKS
+  // SEARCH
+  // =====================================================
+
+  void toggleSearch() {
+    isSearching.value = !isSearching.value;
+
+    if (!isSearching.value) {
+      searchQuery.value = '';
+    }
+  }
+
+  void onSearchChanged(String query) {
+    searchQuery.value =
+        query.trim().toLowerCase();
+  }
+
+  void searchTask(String value) {
+    searchQuery.value =
+        value.trim().toLowerCase();
+  }
+
+  void clearSearch() {
+    searchQuery.value = '';
+  }
+
+  // =====================================================
+  // FILTERED TASKS
   // =====================================================
 
   List<Map<String, dynamic>> get filteredTasks {
-    List<Map<String, dynamic>> result = tasks.toList();
+    List<Map<String, dynamic>> result =
+    tasks.toList();
 
-    // STATUS FILTER
     if (selectedFilter.value != 0) {
-      const statusList = ['New', 'Progress', 'Completed'];
-      final selectedStatus = statusList[selectedFilter.value - 1];
-      result = result
-          .where((task) => task['status']?.toString() == selectedStatus)
-          .toList();
+      const List<String> statusList = [
+        'New',
+        'Progress',
+        'Completed',
+      ];
+
+      final String selectedStatus =
+      statusList[selectedFilter.value - 1];
+
+      result = result.where((task) {
+        return task['status']
+            ?.toString() ==
+            selectedStatus;
+      }).toList();
     }
 
     return result;
@@ -103,10 +182,24 @@ class TaskController extends GetxController {
     }
 
     return filteredTasks.where((task) {
-      final title = task['title']?.toString().toLowerCase() ?? '';
-      final description = task['description']?.toString().toLowerCase() ?? '';
-      return title.contains(searchQuery.value) ||
-          description.contains(searchQuery.value);
+      final String title =
+          task['title']
+              ?.toString()
+              .toLowerCase() ??
+              '';
+
+      final String description =
+          task['description']
+              ?.toString()
+              .toLowerCase() ??
+              '';
+
+      return title.contains(
+        searchQuery.value,
+      ) ||
+          description.contains(
+            searchQuery.value,
+          );
     }).toList();
   }
 
@@ -117,24 +210,43 @@ class TaskController extends GetxController {
   int get totalTasks => tasks.length;
 
   int get newTasks =>
-      tasks.where((t) => t['status'] == 'New').length;
+      tasks.where(
+            (task) =>
+        task['status'] == 'New',
+      ).length;
 
   int get progressTasks =>
-      tasks.where((t) => t['status'] == 'Progress').length;
+      tasks.where(
+            (task) =>
+        task['status'] == 'Progress',
+      ).length;
 
   int get completedTasks =>
-      tasks.where((t) => t['status'] == 'Completed').length;
+      tasks.where(
+            (task) =>
+        task['status'] == 'Completed',
+      ).length;
 
-  double get completionRate =>
-      totalTasks == 0 ? 0 : completedTasks / totalTasks;
+  double get completionRate {
+    if (totalTasks == 0) {
+      return 0;
+    }
+
+    return completedTasks / totalTasks;
+  }
 
   // =====================================================
   // GET TASK BY ID
   // =====================================================
 
-  Map<String, dynamic>? getTaskById(String id) {
+  Map<String, dynamic>? getTaskById(
+      String id,
+      ) {
     try {
-      return tasks.firstWhere((task) => task['id']?.toString() == id);
+      return tasks.firstWhere(
+            (task) =>
+        task['id']?.toString() == id,
+      );
     } catch (_) {
       return null;
     }
@@ -144,13 +256,18 @@ class TaskController extends GetxController {
   // ADD TASK
   // =====================================================
 
-  void addTask({
+  Future<void> addTask({
     required String title,
     required String description,
     required String priority,
-  }) {
-    final String id = DateTime.now().microsecondsSinceEpoch.toString();
-    final String subtitle = 'Today • $priority Priority';
+  }) async {
+    final String id =
+    DateTime.now()
+        .microsecondsSinceEpoch
+        .toString();
+
+    final String subtitle =
+        'Today • $priority Priority';
 
     tasks.add({
       'id': id,
@@ -162,31 +279,43 @@ class TaskController extends GetxController {
     });
 
     tasks.refresh();
+
+    await _saveTasks();
   }
 
   // =====================================================
   // UPDATE TASK
   // =====================================================
 
-  bool updateTask({
+  Future<bool> updateTask({
     required String id,
     required String title,
     required String description,
     required String priority,
-  }) {
-    final int index = tasks.indexWhere((task) => task['id']?.toString() == id);
+  }) async {
+    final int index =
+    tasks.indexWhere(
+          (task) =>
+      task['id']?.toString() == id,
+    );
 
-    if (index == -1) return false;
+    if (index == -1) {
+      return false;
+    }
 
     tasks[index] = {
       ...tasks[index],
       'title': title,
       'description': description,
       'priority': priority,
-      'subtitle': 'Today • $priority Priority',
+      'subtitle':
+      'Today • $priority Priority',
     };
 
     tasks.refresh();
+
+    await _saveTasks();
+
     return true;
   }
 
@@ -194,13 +323,19 @@ class TaskController extends GetxController {
   // UPDATE STATUS
   // =====================================================
 
-  bool updateTaskStatus({
+  Future<bool> updateTaskStatus({
     required String id,
     required String newStatus,
-  }) {
-    final int index = tasks.indexWhere((task) => task['id']?.toString() == id);
+  }) async {
+    final int index =
+    tasks.indexWhere(
+          (task) =>
+      task['id']?.toString() == id,
+    );
 
-    if (index == -1) return false;
+    if (index == -1) {
+      return false;
+    }
 
     tasks[index] = {
       ...tasks[index],
@@ -208,6 +343,9 @@ class TaskController extends GetxController {
     };
 
     tasks.refresh();
+
+    await _saveTasks();
+
     return true;
   }
 
@@ -215,10 +353,20 @@ class TaskController extends GetxController {
   // DELETE TASK
   // =====================================================
 
-  bool deleteTask(String id) {
+  Future<bool> deleteTask(
+      String id,
+      ) async {
     final int oldLength = tasks.length;
-    tasks.removeWhere((task) => task['id']?.toString() == id);
+
+    tasks.removeWhere(
+          (task) =>
+      task['id']?.toString() == id,
+    );
+
     tasks.refresh();
+
+    await _saveTasks();
+
     return tasks.length < oldLength;
   }
 }

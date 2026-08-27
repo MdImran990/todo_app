@@ -64,10 +64,8 @@ class TaskCard extends StatelessWidget {
         ),
         child: Row(
           children: [
-            // =================================================
-            // ICON
-            // =================================================
 
+            // ICON
             Container(
               width: 50,
               height: 50,
@@ -85,9 +83,7 @@ class TaskCard extends StatelessWidget {
 
             const SizedBox(width: 14),
 
-            // =================================================
             // TASK INFO
-            // =================================================
 
             Expanded(
               child: Column(
@@ -141,9 +137,7 @@ class TaskCard extends StatelessWidget {
     );
   }
 
-  // =====================================================
   // STATUS BADGE
-  // =====================================================
 
   Widget _statusBadge() {
     final Color statusColor;

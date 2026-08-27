@@ -1,8 +1,11 @@
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:get_storage/get_storage.dart';
 
 class AuthStorage {
   AuthStorage._();
+
   static const FlutterSecureStorage _storage = FlutterSecureStorage();
+  static final GetStorage _box = GetStorage();
 
   static const String _tokenKey = 'auth_token';
   static const String _firstNameKey = 'first_name';
@@ -11,7 +14,10 @@ class AuthStorage {
   static const String _mobileKey = 'user_mobile';
   static const String _photoKey = 'user_photo';
 
+  // =====================================================
   // TOKEN
+  // =====================================================
+
   static Future<void> saveToken(String token) async {
     await _storage.write(key: _tokenKey, value: token);
   }
@@ -29,7 +35,10 @@ class AuthStorage {
     return token != null && token.isNotEmpty;
   }
 
+  // =====================================================
   // USER INFO SAVE
+  // =====================================================
+
   static Future<void> saveUserInfo({
     required String firstName,
     required String lastName,
@@ -41,21 +50,57 @@ class AuthStorage {
     await _storage.write(key: _lastNameKey, value: lastName);
     await _storage.write(key: _emailKey, value: email);
     await _storage.write(key: _mobileKey, value: mobile);
-    await _storage.write(key: _photoKey, value: photo);
+
+    // ✅ photo GetStorage এ save — logout এ delete হবে না
+    if (photo.isNotEmpty) {
+      _box.write(_photoKey, photo);
+    }
   }
 
+  // =====================================================
   // USER INFO GET
+  // =====================================================
+
   static Future<Map<String, String>> getUserInfo() async {
     return {
       'firstName': await _storage.read(key: _firstNameKey) ?? '',
       'lastName': await _storage.read(key: _lastNameKey) ?? '',
       'email': await _storage.read(key: _emailKey) ?? '',
       'mobile': await _storage.read(key: _mobileKey) ?? '',
-      'photo': await _storage.read(key: _photoKey) ?? '',
+      'photo': _box.read(_photoKey) ?? '', // ✅ GetStorage থেকে
     };
   }
-  // CLEAR ALL
+
+  // =====================================================
+  // PHOTO — আলাদাভাবে save/get
+  // =====================================================
+
+  static void savePhoto(String path) {
+    _box.write(_photoKey, path);
+  }
+
+  static String? getPhoto() {
+    return _box.read(_photoKey);
+  }
+
+  // =====================================================
+  // GET CURRENT EMAIL
+  // =====================================================
+
+  static Future<String> getCurrentEmail() async {
+    return await _storage.read(key: _emailKey) ?? '';
+  }
+
+  // =====================================================
+  // CLEAR — photo রেখে বাকি সব delete
+  // =====================================================
+
   static Future<void> clearAll() async {
-    await _storage.deleteAll();
+    await _storage.delete(key: _tokenKey);
+    await _storage.delete(key: _firstNameKey);
+    await _storage.delete(key: _lastNameKey);
+    await _storage.delete(key: _emailKey);
+    await _storage.delete(key: _mobileKey);
+    // ✅ _photoKey delete করা হচ্ছে না
   }
 }

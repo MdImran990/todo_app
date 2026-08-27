@@ -20,7 +20,7 @@ class AddTaskView extends GetView<AddTaskController> {
     return Scaffold(
       backgroundColor: bgColor,
 
-      // ── APP BAR ──────────────────────────────────────────
+      //APP BAR
       appBar: AppBar(
         backgroundColor: bgColor,
         elevation: 0,
@@ -44,7 +44,7 @@ class AddTaskView extends GetView<AddTaskController> {
         ),
       ),
 
-      // ── BODY ─────────────────────────────────────────────
+      //BODY
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.fromLTRB(20, 10, 20, 30),
@@ -52,7 +52,7 @@ class AddTaskView extends GetView<AddTaskController> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
 
-              // ── HEADER ───────────────────────────────────
+              // HEADER
               Text(
                 'Create a new task',
                 style: TextStyle(
@@ -74,7 +74,7 @@ class AddTaskView extends GetView<AddTaskController> {
 
               const SizedBox(height: 30),
 
-              // ── TASK TITLE ────────────────────────────────
+              // TASK TITLE
               Text(
                 'Task Title',
                 style: TextStyle(
@@ -123,7 +123,7 @@ class AddTaskView extends GetView<AddTaskController> {
 
               const SizedBox(height: 24),
 
-              // ── DESCRIPTION ───────────────────────────────
+              // DESCRIPTION
               Text(
                 'Description',
                 style: TextStyle(
@@ -165,7 +165,7 @@ class AddTaskView extends GetView<AddTaskController> {
 
               const SizedBox(height: 24),
 
-              // ── PRIORITY ──────────────────────────────────
+              // PRIORITY
               Text(
                 'Priority',
                 style: TextStyle(
@@ -215,7 +215,7 @@ class AddTaskView extends GetView<AddTaskController> {
 
               const SizedBox(height: 35),
 
-              // ── CREATE TASK BUTTON ────────────────────────
+              // CREATE TASK BUTTON
               SizedBox(
                 width: double.infinity,
                 height: 56,
@@ -246,7 +246,7 @@ class AddTaskView extends GetView<AddTaskController> {
     );
   }
 
-  // ── PRIORITY BUTTON ───────────────────────────────────────
+  //PRIORITY BUTTON
   Widget _priorityButton({
     required String title,
     required IconData icon,

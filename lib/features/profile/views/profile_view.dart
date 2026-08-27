@@ -268,7 +268,6 @@ class ProfileView extends GetView<ProfileController> {
                       trailing: Switch(
                         value: controller.notificationsEnabled.value,
                         onChanged: controller.toggleNotifications,
-                        activeColor: colorScheme.primary,
                       ),
                     )),
 
@@ -282,7 +281,6 @@ class ProfileView extends GetView<ProfileController> {
                       trailing: Switch(
                         value: ThemeService.to.isDarkMode.value,
                         onChanged: (_) => ThemeService.to.toggleTheme(),
-                        activeColor: colorScheme.primary,
                       ),
                     )),
 

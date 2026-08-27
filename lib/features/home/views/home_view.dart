@@ -7,12 +7,12 @@ import '../controllers/time_controller.dart';
 import '../../task/views/task_view.dart';
 import '../../profile/views/profile_view.dart';
 
-// ── Shell Controller ──────────────────────────────────────────
+// ── Shell Controller
 class HomeShellController extends GetxController {
   final selectedIndex = 0.obs;
 }
 
-// ── Shell ─────────────────────────────────────────────────────
+// ── Shell
 class HomeShell extends StatelessWidget {
   const HomeShell({super.key});
 
@@ -68,7 +68,7 @@ class HomeShell extends StatelessWidget {
   }
 }
 
-// ── HomeView entry point ──────────────────────────────────────
+// ── HomeView entry point
 class HomeView extends GetView<HomeController> {
   const HomeView({super.key});
 
@@ -76,7 +76,7 @@ class HomeView extends GetView<HomeController> {
   Widget build(BuildContext context) => const HomeShell();
 }
 
-// ── HomeBody ──────────────────────────────────────────────────
+// ── HomeBody
 class HomeBody extends GetView<HomeController> {
   const HomeBody({super.key});
 
@@ -87,7 +87,6 @@ class HomeBody extends GetView<HomeController> {
     final TimeController timeController = Get.find<TimeController>();
     final HomeShellController shell = Get.find<HomeShellController>();
 
-    // ✅ Theme থেকে color নেওয়া হচ্ছে
     final colorScheme = Theme.of(context).colorScheme;
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
@@ -109,7 +108,7 @@ class HomeBody extends GetView<HomeController> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
 
-              // ── HEADER ───────────────────────────────────
+              // HEADER
               Row(
                 children: [
                   Expanded(
@@ -157,7 +156,7 @@ class HomeBody extends GetView<HomeController> {
 
               const SizedBox(height: 24),
 
-              // ── REAL TIME & DATE ──────────────────────────
+              // ── REAL TIME & DATE
               Obx(
                     () => Container(
                   width: double.infinity,
@@ -222,7 +221,7 @@ class HomeBody extends GetView<HomeController> {
 
               const SizedBox(height: 24),
 
-              // ── MY TASKS CARD ─────────────────────────────
+              // MY TASKS CARD
               GestureDetector(
                 onTap: () => shell.selectedIndex.value = 1,
                 child: Container(

@@ -24,15 +24,21 @@ class ProfileController extends GetxController {
     loadUserInfo();
   }
 
+  // =====================================================
+  // LOAD USER INFO
+  // =====================================================
+
   Future<void> loadUserInfo() async {
     isLoading.value = true;
+
     final info = await AuthStorage.getUserInfo();
     firstName.value = info['firstName'] ?? '';
     lastName.value = info['lastName'] ?? '';
     email.value = info['email'] ?? '';
     mobile.value = info['mobile'] ?? '';
 
-    final String? savedPhoto = info['photo'];
+    // ✅ photo আলাদাভাবে load — logout এ delete হয় না
+    final String? savedPhoto = AuthStorage.getPhoto();
     if (savedPhoto != null && savedPhoto.isNotEmpty) {
       final file = File(savedPhoto);
       if (await file.exists()) {
@@ -49,6 +55,10 @@ class ProfileController extends GetxController {
     notificationsEnabled.value = value;
   }
 
+  // =====================================================
+  // PICK IMAGE FROM GALLERY
+  // =====================================================
+
   Future<void> pickImageFromGallery() async {
     try {
       final XFile? picked = await _picker.pickImage(
@@ -59,13 +69,8 @@ class ProfileController extends GetxController {
       if (picked != null) {
         profileImage.value = File(picked.path);
 
-        await AuthStorage.saveUserInfo(
-          firstName: firstName.value,
-          lastName: lastName.value,
-          email: email.value,
-          mobile: mobile.value,
-          photo: picked.path,
-        );
+        // ✅ শুধু photo save — বাকি info যায় না
+        AuthStorage.savePhoto(picked.path);
 
         Get.snackbar(
           'Success',
@@ -83,6 +88,10 @@ class ProfileController extends GetxController {
     }
   }
 
+  // =====================================================
+  // PICK IMAGE FROM CAMERA
+  // =====================================================
+
   Future<void> pickImageFromCamera() async {
     try {
       final XFile? picked = await _picker.pickImage(
@@ -93,13 +102,8 @@ class ProfileController extends GetxController {
       if (picked != null) {
         profileImage.value = File(picked.path);
 
-        await AuthStorage.saveUserInfo(
-          firstName: firstName.value,
-          lastName: lastName.value,
-          email: email.value,
-          mobile: mobile.value,
-          photo: picked.path,
-        );
+        // ✅ শুধু photo save
+        AuthStorage.savePhoto(picked.path);
 
         Get.snackbar(
           'Success',
@@ -117,7 +121,10 @@ class ProfileController extends GetxController {
     }
   }
 
-  // ✅ Bottom sheet এখন view থেকে call হবে
+  // =====================================================
+  // SHOW IMAGE PICKER DIALOG
+  // =====================================================
+
   void showImagePickerDialog() {
     Get.bottomSheet(
       _ImagePickerSheet(
@@ -134,13 +141,20 @@ class ProfileController extends GetxController {
     );
   }
 
+  // =====================================================
+  // LOGOUT
+  // =====================================================
+
   Future<void> logout() async {
     await AuthStorage.clearAll();
     Get.offAllNamed(AppRoutes.login);
   }
 }
 
-// ✅ Bottom sheet widget আলাদা class এ
+// =====================================================
+// IMAGE PICKER SHEET
+// =====================================================
+
 class _ImagePickerSheet extends StatelessWidget {
   final VoidCallback onGallery;
   final VoidCallback onCamera;
@@ -206,6 +220,10 @@ class _ImagePickerSheet extends StatelessWidget {
     );
   }
 }
+
+// =====================================================
+// PICKER OPTION
+// =====================================================
 
 class _PickerOption extends StatelessWidget {
   final IconData icon;

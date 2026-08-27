@@ -98,7 +98,7 @@ class TaskView extends GetView<TaskController> {
           child: Column(
             children: [
 
-              // ── FILTER ───────────────────────────────────
+              // FILTER
               SizedBox(
                 height: 44,
                 child: Obx(() {
@@ -152,7 +152,7 @@ class TaskView extends GetView<TaskController> {
 
               const SizedBox(height: 22),
 
-              // ── TASK LIST ─────────────────────────────────
+              // TASK LIST
               Expanded(
                 child: Obx(() {
                   final List<Map<String, dynamic>> tasks =

@@ -89,14 +89,14 @@ class AppPages {
       binding: AddTaskBinding(),
     ),
 
-    // TASK DETAILS ✅
+    // TASK DETAILS
     GetPage(
       name: AppRoutes.taskDetails,
       page: () => const TaskDetailsView(),
       binding: TaskDetailsBinding(),
     ),
 
-    // PROFILE ✅
+    // PROFILE
     GetPage(
       name: AppRoutes.profile,
       page: () => const ProfileView(),

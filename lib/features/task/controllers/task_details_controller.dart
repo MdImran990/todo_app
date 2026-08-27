@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+
 import 'task_controller.dart';
 
 class TaskDetailsController extends GetxController {
@@ -8,28 +9,43 @@ class TaskDetailsController extends GetxController {
   final RxMap<String, dynamic> task = <String, dynamic>{}.obs;
 
   final TextEditingController titleController = TextEditingController();
-  final TextEditingController descriptionController = TextEditingController();
+
+  final TextEditingController descriptionController =
+  TextEditingController();
+
   final RxString selectedPriority = 'Medium'.obs;
   final RxString selectedStatus = 'New'.obs;
+
   final RxBool isLoading = false.obs;
 
   @override
   void onInit() {
     super.onInit();
+
     final String? id = Get.arguments as String?;
-    if (id != null) {
+
+    if (id != null && id.isNotEmpty) {
       loadTask(id);
     }
   }
 
   void loadTask(String id) {
-    final data = _taskController.getTaskById(id);
+    final Map<String, dynamic>? data =
+    _taskController.getTaskById(id);
+
     if (data != null) {
-      task.value = data;
-      titleController.text = data['title'] ?? '';
-      descriptionController.text = data['description'] ?? '';
-      selectedPriority.value = data['priority'] ?? 'Medium';
-      selectedStatus.value = data['status'] ?? 'New';
+      task.value = Map<String, dynamic>.from(data);
+
+      titleController.text = data['title']?.toString() ?? '';
+
+      descriptionController.text =
+          data['description']?.toString() ?? '';
+
+      selectedPriority.value =
+          data['priority']?.toString() ?? 'Medium';
+
+      selectedStatus.value =
+          data['status']?.toString() ?? 'New';
     }
   }
 
@@ -41,9 +57,11 @@ class TaskDetailsController extends GetxController {
     selectedStatus.value = status;
   }
 
-  void updateTask() {
-    final title = titleController.text.trim();
-    final description = descriptionController.text.trim();
+  Future<void> updateTask() async {
+    final String title = titleController.text.trim();
+
+    final String description =
+    descriptionController.text.trim();
 
     if (title.isEmpty) {
       Get.snackbar(
@@ -51,42 +69,100 @@ class TaskDetailsController extends GetxController {
         'Please enter a task title.',
         snackPosition: SnackPosition.BOTTOM,
       );
+
       return;
     }
 
     final String id = task['id']?.toString() ?? '';
 
-    final bool updated = _taskController.updateTask(
-      id: id,
-      title: title,
-      description: description,
-      priority: selectedPriority.value,
-    );
+    if (id.isEmpty) {
+      Get.snackbar(
+        'Error',
+        'Task ID not found.',
+        snackPosition: SnackPosition.BOTTOM,
+      );
 
-    _taskController.updateTaskStatus(
-      id: id,
-      newStatus: selectedStatus.value,
-    );
+      return;
+    }
 
-    if (updated) {
+    isLoading.value = true;
+
+    try {
+      final bool updated =
+      await _taskController.updateTask(
+        id: id,
+        title: title,
+        description: description,
+        priority: selectedPriority.value,
+      );
+
+      if (!updated) {
+        Get.snackbar(
+          'Error',
+          'Failed to update task.',
+          snackPosition: SnackPosition.BOTTOM,
+        );
+
+        return;
+      }
+
+      final bool statusUpdated =
+      await _taskController.updateTaskStatus(
+        id: id,
+        newStatus: selectedStatus.value,
+      );
+
+      if (!statusUpdated) {
+        Get.snackbar(
+          'Error',
+          'Task status could not be updated.',
+          snackPosition: SnackPosition.BOTTOM,
+        );
+
+        return;
+      }
+
+      task.value = {
+        ...task,
+        'title': title,
+        'description': description,
+        'priority': selectedPriority.value,
+        'status': selectedStatus.value,
+        'subtitle':
+        'Today • ${selectedPriority.value} Priority',
+      };
+
       Get.snackbar(
         'Success',
         'Task updated successfully.',
         snackPosition: SnackPosition.BOTTOM,
         duration: const Duration(seconds: 2),
       );
+
       Get.back();
-    } else {
+    } catch (e) {
       Get.snackbar(
         'Error',
-        'Failed to update task.',
+        'Something went wrong.',
         snackPosition: SnackPosition.BOTTOM,
       );
+    } finally {
+      isLoading.value = false;
     }
   }
 
-  void deleteTask() {
+  Future<void> deleteTask() async {
     final String id = task['id']?.toString() ?? '';
+
+    if (id.isEmpty) {
+      Get.snackbar(
+        'Error',
+        'Task ID not found.',
+        snackPosition: SnackPosition.BOTTOM,
+      );
+
+      return;
+    }
 
     Get.dialog(
       AlertDialog(
@@ -96,43 +172,58 @@ class TaskDetailsController extends GetxController {
         title: const Text(
           'Delete Task',
           style: TextStyle(
-            color: Color(0xFF171725),
             fontWeight: FontWeight.w800,
           ),
         ),
         content: const Text(
           'Are you sure you want to delete this task?',
-          style: TextStyle(color: Color(0xFF8C8C9A)),
         ),
         actions: [
           TextButton(
-            onPressed: () => Get.back(),
-            child: const Text(
-              'Cancel',
-              style: TextStyle(color: Color(0xFF8C8C9A)),
-            ),
-          ),
-          ElevatedButton(
             onPressed: () {
               Get.back();
-              final bool deleted = _taskController.deleteTask(id);
-              if (deleted) {
+            },
+            child: const Text('Cancel'),
+          ),
+          ElevatedButton(
+            onPressed: () async {
+              Get.back();
+
+              isLoading.value = true;
+
+              try {
+                final bool deleted =
+                await _taskController.deleteTask(id);
+
+                if (deleted) {
+                  Get.snackbar(
+                    'Deleted',
+                    'Task deleted successfully.',
+                    snackPosition: SnackPosition.BOTTOM,
+                    duration: const Duration(seconds: 2),
+                  );
+
+                  Get.back();
+                } else {
+                  Get.snackbar(
+                    'Error',
+                    'Failed to delete task.',
+                    snackPosition: SnackPosition.BOTTOM,
+                  );
+                }
+              } catch (e) {
                 Get.snackbar(
-                  'Deleted',
-                  'Task deleted successfully.',
+                  'Error',
+                  'Something went wrong.',
                   snackPosition: SnackPosition.BOTTOM,
-                  duration: const Duration(seconds: 2),
                 );
-                Get.back();
+              } finally {
+                isLoading.value = false;
               }
             },
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.red,
               foregroundColor: Colors.white,
-              elevation: 0,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
-              ),
             ),
             child: const Text('Delete'),
           ),
@@ -145,6 +236,7 @@ class TaskDetailsController extends GetxController {
   void onClose() {
     titleController.dispose();
     descriptionController.dispose();
+
     super.onClose();
   }
 }
